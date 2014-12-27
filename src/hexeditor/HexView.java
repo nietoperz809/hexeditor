@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -22,11 +23,11 @@ import javax.swing.text.Position;
 public class HexView extends JTextArea
 {
     final byte[] memory;
-    final int lines;
     final char[] digits =
     {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
+
     static final int LINECHARS = 41;
     static final int LEFTMARGIN = 6;
     static final int RIGHTMARGIN = 28;
@@ -37,16 +38,30 @@ public class HexView extends JTextArea
     int x;
     int y;
 
-    private boolean isHexChar(char c)
+    private void setHiNibble (int offset, int val)
     {
-        for (char d : digits)
+        int b = memory[offset];
+        b = (b&0x0f) | ((val<<4)&0xf0);
+        memory[offset] = (byte)b;
+    }
+
+    private void setLoNibble (int offset, int val)
+    {
+        int b = memory[offset];
+        b = (b&0xf0) | (val&0x0f);
+        memory[offset] = (byte)b;
+    }
+    
+    private int getHexIndex(char c)
+    {
+        for (int n=0; n<digits.length; n++)
         {
-            if (d == Character.toUpperCase(c))
+            if (Character.toUpperCase(c) == digits[n])
             {
-                return true;
+                return n;
             }
         }
-        return false;
+        return -1;
     }
 
     KeyListener keyListener = new KeyListener()
@@ -157,7 +172,8 @@ public class HexView extends JTextArea
             {
                 if (str.length() == 1)
                 {
-                    if (!isHexChar(str.charAt(0)))
+                    int n = getHexIndex(str.charAt(0));
+                    if (n == -1)
                     {
                         return;
                     }
@@ -166,6 +182,12 @@ public class HexView extends JTextArea
                     int xr = x%3;
                     int ymem = y;
                     int memoffset = xmem + ymem*8;
+                    
+                    if (xr == 0)
+                        setHiNibble (memoffset, n);
+                    else
+                        setLoNibble (memoffset, n);
+                    
                     System.out.println("X:" + xmem + " Y:" + ymem + " xr: "+ xr);
                     System.out.println(memoffset);
 
@@ -184,7 +206,6 @@ public class HexView extends JTextArea
         this.addKeyListener(keyListener);
         this.setDocument(createOverwriteDocument());
         memory = mem;
-        lines = mem.length / 8;
 
         memory[7] = (byte) 'h';
         memory[8] = (byte) 'a';
