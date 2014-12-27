@@ -8,6 +8,7 @@ package hexeditor;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.swing.ActionMap;
 import javax.swing.JTextArea;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -33,30 +34,30 @@ public class HexView extends JTextArea
     static final int RIGHTMARGIN = 28;
     static final int TOPMARGIN = 0;
     static final int BOTTOMMARGIN = 8191;
-    
+
     private int lastKey;
     int x;
     int y;
 
-    private int setHiNibble (int offset, int val)
+    private int setHiNibble(int offset, int val)
     {
         int b = memory[offset];
-        b = (b&0x0f) | ((val<<4)&0xf0);
-        memory[offset] = (byte)b;
+        b = (b & 0x0f) | ((val << 4) & 0xf0);
+        memory[offset] = (byte) b;
         return b;
     }
 
-    private int setLoNibble (int offset, int val)
+    private int setLoNibble(int offset, int val)
     {
         int b = memory[offset];
-        b = (b&0xf0) | (val&0x0f);
-        memory[offset] = (byte)b;
+        b = (b & 0xf0) | (val & 0x0f);
+        memory[offset] = (byte) b;
         return b;
     }
-    
+
     private int getHexIndex(char c)
     {
-        for (int n=0; n<digits.length; n++)
+        for (int n = 0; n < digits.length; n++)
         {
             if (Character.toUpperCase(c) == digits[n])
             {
@@ -84,12 +85,12 @@ public class HexView extends JTextArea
         {
         }
     };
-    
+
     NavigationFilter filter = new NavigationFilter()
     {
         int topdetect;
         int downdetect;
-        
+
         @Override
         public void setDot(NavigationFilter.FilterBypass fb, int dot, Position.Bias bias)
         {
@@ -123,7 +124,7 @@ public class HexView extends JTextArea
             {
                 downdetect = 0;
             }
-            
+
             if ((x + 1) % 3 == 0)
             {
                 if (lastKey == KeyEvent.VK_LEFT)
@@ -140,17 +141,25 @@ public class HexView extends JTextArea
             {
                 x = RIGHTMARGIN;
                 if (y != 0)
+                {
                     y--;
+                }
                 else
+                {
                     y = BOTTOMMARGIN;
+                }
             }
             else if (x > RIGHTMARGIN)
             {
                 x = LEFTMARGIN;
                 if (y < BOTTOMMARGIN)
+                {
                     y++;
+                }
                 else
+                {
                     y = TOPMARGIN;
+                }
             }
 
             fb.setDot(y * LINECHARS + x, bias);
@@ -179,30 +188,31 @@ public class HexView extends JTextArea
                     {
                         return;
                     }
-                    
-                    int xmem = x/3-LEFTMARGIN/3;
-                    int xr = x%3;
-                    int memoffset = xmem + y*8;
-                    
-                    int charidx = y*LINECHARS + 32 + xmem;
-                    
+
+                    int xmem = x / 3 - LEFTMARGIN / 3;
+                    int xr = x % 3;
+                    int memoffset = xmem + y * 8;
+
+                    int charidx = y * LINECHARS + 32 + xmem;
+
                     char nval;
                     if (xr == 0)
                     {
-                        nval = (char)setHiNibble (memoffset, n);
+                        nval = (char) setHiNibble(memoffset, n);
                     }
                     else
                     {
-                        nval = (char)setLoNibble (memoffset, n);
+                        nval = (char) setLoNibble(memoffset, n);
                     }
                     if (Character.isISOControl(nval))
+                    {
                         nval = '.';
+                    }
                     super.remove(charidx, 1);
-                    super.insertString(charidx, ""+nval, a);
-                    
+                    super.insertString(charidx, "" + nval, a);
+
                     //System.out.println("X:" + xmem + " Y:" + y + " xr: "+ xr);
                     //System.out.println(memoffset);
-
                     super.remove(offs, 1);
                 }
                 super.insertString(offs, str, a);
@@ -214,6 +224,11 @@ public class HexView extends JTextArea
     public HexView(byte[] mem)
     {
         super();
+        
+        ActionMap am = getActionMap();
+        am.get("delete-previous").setEnabled(false);
+        am.get("delete-next").setEnabled(false);
+        
         this.setNavigationFilter(filter);
         this.addKeyListener(keyListener);
         this.setDocument(createOverwriteDocument());
