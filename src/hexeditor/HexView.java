@@ -6,13 +6,18 @@
  */
 package hexeditor;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ActionMap;
 import javax.swing.JTextArea;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
+import javax.swing.text.Highlighter;
 import javax.swing.text.NavigationFilter;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.Position;
@@ -148,6 +153,22 @@ public class HexView extends JTextArea
     public HexView(byte[] mem)
     {
         super();
+        
+        Highlighter.HighlightPainter Painter1 = new DefaultHighlighter.DefaultHighlightPainter(Color.black);
+        Highlighter.HighlightPainter Painter2 = new DefaultHighlighter.DefaultHighlightPainter(Color.GRAY);
+        try
+        {
+            Highlighter hl = getHighlighter();
+            for (int s=0; s<8192*41; s+=41)
+            {
+                hl.addHighlight (s, s+5, Painter1);
+                hl.addHighlight (s+32, s+40, Painter2);
+            }
+        }
+        catch (BadLocationException ex)
+        {
+            System.out.println (ex);
+        }
         
         ActionMap am = getActionMap();
         am.get("delete-previous").setEnabled(false);
