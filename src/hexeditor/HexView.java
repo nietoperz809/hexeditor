@@ -34,7 +34,7 @@ public class HexView extends JTextArea
     static final int RIGHTMARGIN = 28;
     static final int TOPMARGIN = 0;
     static final int BOTTOMMARGIN = 8_191;
-    final byte[] memory;
+    final int[] memory;
     final char[] digits = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
@@ -150,7 +150,7 @@ public class HexView extends JTextArea
         }
     };
 
-    public HexView(byte[] mem)
+    public HexView(int[] mem)
     {
         super();
         
@@ -258,7 +258,7 @@ public class HexView extends JTextArea
         return doc;
     }
 
-    String toHex(byte b)
+    String toHex(int b)
     {
         StringBuilder sb = new StringBuilder();
         sb.append(digits[(b >>> 4) & 0x0f]);
