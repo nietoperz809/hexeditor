@@ -23,49 +23,21 @@ import javax.swing.text.Position;
  */
 public class HexView extends JTextArea
 {
-    final byte[] memory;
-    final char[] digits =
-    {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-    };
 
     static final int LINECHARS = 41;
     static final int LEFTMARGIN = 6;
     static final int RIGHTMARGIN = 28;
     static final int TOPMARGIN = 0;
-    static final int BOTTOMMARGIN = 8191;
+    static final int BOTTOMMARGIN = 8_191;
+    final byte[] memory;
+    final char[] digits = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    };
 
     private int lastKey;
     int x;
     int y;
 
-    private int setHiNibble(int offset, int val)
-    {
-        int b = memory[offset];
-        b = (b & 0x0f) | ((val << 4) & 0xf0);
-        memory[offset] = (byte) b;
-        return b;
-    }
-
-    private int setLoNibble(int offset, int val)
-    {
-        int b = memory[offset];
-        b = (b & 0xf0) | (val & 0x0f);
-        memory[offset] = (byte) b;
-        return b;
-    }
-
-    private int getHexIndex(char c)
-    {
-        for (int n = 0; n < digits.length; n++)
-        {
-            if (Character.toUpperCase(c) == digits[n])
-            {
-                return n;
-            }
-        }
-        return -1;
-    }
 
     KeyListener keyListener = new KeyListener()
     {
@@ -168,10 +140,54 @@ public class HexView extends JTextArea
         @Override
         public void moveDot(NavigationFilter.FilterBypass fb, int dot, Position.Bias bias)
         {
-            System.out.println("Moving: " + dot);
-            fb.moveDot(dot, bias);
+            //fb.moveDot(dot, bias);
+            
         }
     };
+
+    public HexView(byte[] mem)
+    {
+        super();
+        
+        ActionMap am = getActionMap();
+        am.get("delete-previous").setEnabled(false);
+        am.get("delete-next").setEnabled(false);
+        
+        this.setNavigationFilter(filter);
+        this.addKeyListener(keyListener);
+        this.setDocument(createOverwriteDocument());
+        memory = mem;
+        
+        populate();
+    }
+
+    private int setHiNibble(int offset, int val)
+    {
+        int b = memory[offset];
+        b = (b & 0x0f) | ((val << 4) & 0xf0);
+        memory[offset] = (byte) b;
+        return b;
+    }
+
+    private int setLoNibble(int offset, int val)
+    {
+        int b = memory[offset];
+        b = (b & 0xf0) | (val & 0x0f);
+        memory[offset] = (byte) b;
+        return b;
+    }
+
+    private int getHexIndex(char c)
+    {
+        for (int n = 0; n < digits.length; n++)
+        {
+            if (Character.toUpperCase(c) == digits[n])
+            {
+                return n;
+            }
+        }
+        return -1;
+    }
 
     private Document createOverwriteDocument()
     {
@@ -221,25 +237,6 @@ public class HexView extends JTextArea
         return doc;
     }
 
-    public HexView(byte[] mem)
-    {
-        super();
-        
-        ActionMap am = getActionMap();
-        am.get("delete-previous").setEnabled(false);
-        am.get("delete-next").setEnabled(false);
-        
-        this.setNavigationFilter(filter);
-        this.addKeyListener(keyListener);
-        this.setDocument(createOverwriteDocument());
-        memory = mem;
-
-        memory[7] = (byte) 'h';
-        memory[8] = (byte) 'a';
-
-        pollute();
-    }
-
     String toHex(byte b)
     {
         StringBuilder sb = new StringBuilder();
@@ -248,7 +245,7 @@ public class HexView extends JTextArea
         return sb.toString();
     }
 
-    private void pollute()
+    private void populate()
     {
         StringBuilder sb = new StringBuilder();
         for (int n = 0; n < memory.length; n += 8)
