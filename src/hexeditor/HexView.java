@@ -9,9 +9,6 @@ package hexeditor;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.ActionMap;
 import javax.swing.JTextArea;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -28,14 +25,14 @@ import javax.swing.text.Position;
  */
 public class HexView extends JTextArea
 {
-
     static final int LINECHARS = 41;
     static final int LEFTMARGIN = 6;
     static final int RIGHTMARGIN = 28;
     static final int TOPMARGIN = 0;
     static final int BOTTOMMARGIN = 8_191;
     final int[] memory;
-    final char[] digits = {
+    final static char[] digits = 
+    {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
 
@@ -43,7 +40,27 @@ public class HexView extends JTextArea
     int x;
     int y;
 
+    public static String toHex8 (int in)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(digits[(in>>>4)&0x0f]);
+        sb.append(digits[in&0x0f]);
+        return sb.toString();
+    }
 
+    public static String toHex16 (int in)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append (toHex8(in>>8));
+        sb.append (toHex8(in));
+        return sb.toString();
+    }
+    
+    public static int readHex (String in)
+    {
+        return Integer.parseInt(in.trim(), 16);
+    }
+    
     KeyListener keyListener = new KeyListener()
     {
         @Override
@@ -54,6 +71,12 @@ public class HexView extends JTextArea
         @Override
         public void keyPressed(KeyEvent e)
         {
+            System.out.println (e);
+            if (e.getKeyCode() == 8 || e.getKeyCode() == 127)
+            {
+                e.consume(); // Eat DEL and BS
+                return;
+            }
             lastKey = e.getKeyCode();
         }
 
@@ -169,10 +192,6 @@ public class HexView extends JTextArea
         {
             System.out.println (ex);
         }
-        
-        ActionMap am = getActionMap();
-        am.get("delete-previous").setEnabled(false);
-        am.get("delete-next").setEnabled(false);
         
         this.setNavigationFilter(filter);
         this.addKeyListener(keyListener);

@@ -5,6 +5,10 @@
  */
 package hexeditor;
 
+import main.java.com.pmeade.cpu.pm6502.Cpu6502;
+import main.java.com.pmeade.cpu.pm6502.MemoryIO;
+import main.java.com.pmeade.cpu.pm6502.PM6502;
+
 /**
  *
  * @author Administrator
@@ -12,13 +16,30 @@ package hexeditor;
 public class TestFrame extends javax.swing.JFrame
 {
     int[] memory = new int[0x10000];
+    Cpu6502 cpu = new PM6502();
+    
+    MemoryIO io = new MemoryIO()
+    {
+       @Override
+        public int read(int address)
+        {
+            return memory[address] & 0xff;
+        }
 
+        @Override
+        public void write(int address, int data)
+        {
+            memory[address] = (data & 0xff);
+        }
+    };
+    
     /**
      * Creates new form TestFrame
      */
     public TestFrame()
     {
         initComponents();
+        cpu.setMemoryIO(io);
     }
 
     /**
@@ -96,8 +117,22 @@ public class TestFrame extends javax.swing.JFrame
         textS.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
 
         jButton1.setText("Step");
+        jButton1.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Reset");
+        jButton2.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -168,6 +203,38 @@ public class TestFrame extends javax.swing.JFrame
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void display()
+    {
+        textA.setText (HexView.toHex8(cpu.getAC()));
+        textS.setText (HexView.toHex8(cpu.getSP()));
+        textP.setText (HexView.toHex8(cpu.getSR()));        
+        textX.setText (HexView.toHex8(cpu.getXR()));        
+        textY.setText (HexView.toHex8(cpu.getYR()));        
+        textPC.setText (HexView.toHex16(cpu.getPC()));            
+    }
+    
+    private void read()
+    {
+        cpu.setAC (HexView.readHex(textA.getText()));
+        cpu.setSP (HexView.readHex(textS.getText()));
+        cpu.setSR (HexView.readHex(textP.getText()));
+        cpu.setXR (HexView.readHex(textX.getText()));
+        cpu.setYR (HexView.readHex(textY.getText()));
+    }
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
+    {//GEN-HEADEREND:event_jButton1ActionPerformed
+        read();
+        cpu.execute();
+        display();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
+    {//GEN-HEADEREND:event_jButton2ActionPerformed
+        cpu.reset();
+        display();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
