@@ -5,6 +5,8 @@
  */
 package hexeditor;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.JTextArea;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -25,24 +27,39 @@ public class HexView extends JTextArea
     {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
+    final int LINECHARS = 41;
+    
+    private int lastKey;
+    
+    KeyListener keyListener = new KeyListener()
+    {
+        @Override
+        public void keyTyped(KeyEvent e)
+        {
+        }
 
-    int old_dot1;
-    int old_dot2;
+        @Override
+        public void keyPressed(KeyEvent e)
+        {
+            lastKey = e.getKeyCode();
+        }
 
+        @Override
+        public void keyReleased(KeyEvent e)
+        {
+        }
+    };
+    
     NavigationFilter filter = new NavigationFilter()
     {
         @Override
         public void setDot(NavigationFilter.FilterBypass fb, int dot, Position.Bias bias)
         {
-            old_dot1 = old_dot2;
-            old_dot2 = dot;
-            int movement = dot - old_dot1;
-            
-            int x = dot % 41;
-            int y = dot / 41;
+            int x = dot % LINECHARS;
+            int y = dot / LINECHARS;
 
             System.out.println("X:" + x + " Y:" + y);
-            System.out.println("movement:" + movement);
+            System.out.println("movement:" + lastKey);
 
             if (x < 6)
             {
@@ -64,14 +81,15 @@ public class HexView extends JTextArea
 //                y = lines-1;
 //            }
 
-            if (movement >= 0)
+            if (lastKey == KeyEvent.VK_RIGHT)
             {
                 if ((x + 1) % 3 == 0)
                 {
                     x++;
                 }
             }
-            else
+
+            if (lastKey == KeyEvent.VK_LEFT)
             {
                 if ((x + 1) % 3 == 0)
                 {
@@ -79,9 +97,7 @@ public class HexView extends JTextArea
                 }
             }
 
-            dot = y * 41 + x;
-            fb.setDot(dot, bias);
-
+            fb.setDot(y * LINECHARS + x, bias);
         }
 
         @Override
@@ -118,6 +134,7 @@ public class HexView extends JTextArea
     {
         super();
         this.setNavigationFilter(filter);
+        this.addKeyListener(keyListener);
         this.setDocument(createOverwriteDocument());
         memory = mem;
         lines = mem.length / 8;
