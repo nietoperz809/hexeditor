@@ -38,18 +38,20 @@ public class HexView extends JTextArea
     int x;
     int y;
 
-    private void setHiNibble (int offset, int val)
+    private int setHiNibble (int offset, int val)
     {
         int b = memory[offset];
         b = (b&0x0f) | ((val<<4)&0xf0);
         memory[offset] = (byte)b;
+        return b;
     }
 
-    private void setLoNibble (int offset, int val)
+    private int setLoNibble (int offset, int val)
     {
         int b = memory[offset];
         b = (b&0xf0) | (val&0x0f);
         memory[offset] = (byte)b;
+        return b;
     }
     
     private int getHexIndex(char c)
@@ -180,16 +182,26 @@ public class HexView extends JTextArea
                     
                     int xmem = x/3-LEFTMARGIN/3;
                     int xr = x%3;
-                    int ymem = y;
-                    int memoffset = xmem + ymem*8;
+                    int memoffset = xmem + y*8;
                     
+                    int charidx = y*LINECHARS + 32 + xmem;
+                    
+                    char nval;
                     if (xr == 0)
-                        setHiNibble (memoffset, n);
+                    {
+                        nval = (char)setHiNibble (memoffset, n);
+                    }
                     else
-                        setLoNibble (memoffset, n);
+                    {
+                        nval = (char)setLoNibble (memoffset, n);
+                    }
+                    if (Character.isISOControl(nval))
+                        nval = '.';
+                    super.remove(charidx, 1);
+                    super.insertString(charidx, ""+nval, a);
                     
-                    System.out.println("X:" + xmem + " Y:" + ymem + " xr: "+ xr);
-                    System.out.println(memoffset);
+                    //System.out.println("X:" + xmem + " Y:" + y + " xr: "+ xr);
+                    //System.out.println(memoffset);
 
                     super.remove(offs, 1);
                 }
