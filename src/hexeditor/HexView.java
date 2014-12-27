@@ -36,34 +36,35 @@ public class HexView extends JTextArea
         {
             old_dot1 = old_dot2;
             old_dot2 = dot;
-
+            int movement = dot - old_dot1;
+            
             int x = dot % 41;
             int y = dot / 41;
 
-            System.out.println("" + x + " - " + y);
-            System.out.println(dot - old_dot1);
+            System.out.println("X:" + x + " Y:" + y);
+            System.out.println("movement:" + movement);
 
             if (x < 6)
             {
                 x = 28;
-                y--;
+                //y--;
             }
             else if (x >= 29)
             {
                 x = 6;
-                y++;
+                //y++;
             }
 
-            if (y == lines)
-            {
-                y = 0;
-            }
-            else if (y == 0)
-            {
-                y = lines-1;
-            }
+//            if (y == lines)
+//            {
+//                y = 0;
+//            }
+//            else if (y == 0 && movement == 0)
+//            {
+//                y = lines-1;
+//            }
 
-            if (dot - old_dot1 > 0)
+            if (movement >= 0)
             {
                 if ((x + 1) % 3 == 0)
                 {
@@ -162,6 +163,7 @@ public class HexView extends JTextArea
             }
             sb.append('\n');
         }
+        sb.deleteCharAt(sb.length()-1);
         this.setText(sb.toString());
     }
 }
