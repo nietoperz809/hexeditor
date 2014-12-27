@@ -34,6 +34,8 @@ public class HexView extends JTextArea
     static final int BOTTOMMARGIN = 8191;
     
     private int lastKey;
+    int x;
+    int y;
 
     private boolean isHexChar(char c)
     {
@@ -74,11 +76,8 @@ public class HexView extends JTextArea
         @Override
         public void setDot(NavigationFilter.FilterBypass fb, int dot, Position.Bias bias)
         {
-            int x = dot % LINECHARS;
-            int y = dot / LINECHARS;
-
-            System.out.println("X:" + x + " Y:" + y);
-            System.out.println("movement:" + lastKey);
+            x = dot % LINECHARS;
+            y = dot / LINECHARS;
 
             if (lastKey == KeyEvent.VK_UP && y == TOPMARGIN)
             {
@@ -108,25 +107,33 @@ public class HexView extends JTextArea
                 downdetect = 0;
             }
             
+            if ((x + 1) % 3 == 0)
+            {
+                if (lastKey == KeyEvent.VK_LEFT)
+                {
+                    x--;
+                }
+                else
+                {
+                    x++;
+                }
+            }
+
             if (x < LEFTMARGIN)
             {
                 x = RIGHTMARGIN;
+                if (y != 0)
+                    y--;
+                else
+                    y = BOTTOMMARGIN;
             }
             else if (x > RIGHTMARGIN)
             {
                 x = LEFTMARGIN;
-            }
-            
-            if ((x + 1) % 3 == 0)
-            {
-                if (lastKey != KeyEvent.VK_LEFT)
-                {
-                    x++;
-                }
+                if (y < BOTTOMMARGIN)
+                    y++;
                 else
-                {
-                    x--;
-                }
+                    y = TOPMARGIN;
             }
 
             fb.setDot(y * LINECHARS + x, bias);
@@ -148,13 +155,19 @@ public class HexView extends JTextArea
             public void insertString(int offs, String str, AttributeSet a)
                     throws BadLocationException
             {
-                System.out.println(str + " " + offs);
                 if (str.length() == 1)
                 {
                     if (!isHexChar(str.charAt(0)))
                     {
                         return;
                     }
+                    
+                    int xmem = x/3-LEFTMARGIN/3;
+                    int xr = x%3;
+                    int ymem = y;
+                    int memoffset = xmem + ymem*8;
+                    System.out.println("X:" + xmem + " Y:" + ymem + " xr: "+ xr);
+                    System.out.println(memoffset);
 
                     super.remove(offs, 1);
                 }
