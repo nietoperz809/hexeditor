@@ -30,19 +30,23 @@ public class HexView extends JTextArea
     static final int LINECHARS = 41;
     static final int LEFTMARGIN = 6;
     static final int RIGHTMARGIN = 28;
+    static final int TOPMARGIN = 0;
+    static final int BOTTOMMARGIN = 8191;
     
     private int lastKey;
-    
-    private boolean isHexChar (char c)
+
+    private boolean isHexChar(char c)
     {
         for (char d : digits)
         {
             if (d == Character.toUpperCase(c))
+            {
                 return true;
+            }
         }
         return false;
     }
-    
+
     KeyListener keyListener = new KeyListener()
     {
         @Override
@@ -64,6 +68,9 @@ public class HexView extends JTextArea
     
     NavigationFilter filter = new NavigationFilter()
     {
+        int topdetect;
+        int downdetect;
+        
         @Override
         public void setDot(NavigationFilter.FilterBypass fb, int dot, Position.Bias bias)
         {
@@ -73,37 +80,50 @@ public class HexView extends JTextArea
             System.out.println("X:" + x + " Y:" + y);
             System.out.println("movement:" + lastKey);
 
+            if (lastKey == KeyEvent.VK_UP && y == TOPMARGIN)
+            {
+                topdetect++;
+                if (topdetect == 2)
+                {
+                    y = BOTTOMMARGIN;
+                    topdetect = 0;
+                }
+            }
+            else
+            {
+                topdetect = 0;
+            }
+
+            if (lastKey == KeyEvent.VK_DOWN && y == BOTTOMMARGIN)
+            {
+                downdetect++;
+                if (downdetect == 2)
+                {
+                    y = TOPMARGIN;
+                    downdetect = 0;
+                }
+            }
+            else
+            {
+                downdetect = 0;
+            }
+            
             if (x < LEFTMARGIN)
             {
                 x = RIGHTMARGIN;
-                //y--;
             }
             else if (x > RIGHTMARGIN)
             {
                 x = LEFTMARGIN;
-                //y++;
             }
-
-//            if (y == lines)
-//            {
-//                y = 0;
-//            }
-//            else if (y == 0 && movement == 0)
-//            {
-//                y = lines-1;
-//            }
-
-            if (lastKey != KeyEvent.VK_LEFT)
+            
+            if ((x + 1) % 3 == 0)
             {
-                if ((x + 1) % 3 == 0)
+                if (lastKey != KeyEvent.VK_LEFT)
                 {
                     x++;
                 }
-            }
-
-            if (lastKey == KeyEvent.VK_LEFT)
-            {
-                if ((x + 1) % 3 == 0)
+                else
                 {
                     x--;
                 }
@@ -128,12 +148,14 @@ public class HexView extends JTextArea
             public void insertString(int offs, String str, AttributeSet a)
                     throws BadLocationException
             {
-                System.out.println (str + " " + offs);
+                System.out.println(str + " " + offs);
                 if (str.length() == 1)
                 {
                     if (!isHexChar(str.charAt(0)))
+                    {
                         return;
-                    
+                    }
+
                     super.remove(offs, 1);
                 }
                 super.insertString(offs, str, a);
@@ -192,7 +214,7 @@ public class HexView extends JTextArea
             }
             sb.append('\n');
         }
-        sb.deleteCharAt(sb.length()-1);
+        sb.deleteCharAt(sb.length() - 1);
         this.setText(sb.toString());
     }
 }
