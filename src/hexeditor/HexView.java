@@ -27,9 +27,21 @@ public class HexView extends JTextArea
     {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
-    final int LINECHARS = 41;
+    static final int LINECHARS = 41;
+    static final int LEFTMARGIN = 6;
+    static final int RIGHTMARGIN = 28;
     
     private int lastKey;
+    
+    private boolean isHexChar (char c)
+    {
+        for (char d : digits)
+        {
+            if (d == Character.toUpperCase(c))
+                return true;
+        }
+        return false;
+    }
     
     KeyListener keyListener = new KeyListener()
     {
@@ -61,14 +73,14 @@ public class HexView extends JTextArea
             System.out.println("X:" + x + " Y:" + y);
             System.out.println("movement:" + lastKey);
 
-            if (x < 6)
+            if (x < LEFTMARGIN)
             {
-                x = 28;
+                x = RIGHTMARGIN;
                 //y--;
             }
-            else if (x >= 29)
+            else if (x > RIGHTMARGIN)
             {
-                x = 6;
+                x = LEFTMARGIN;
                 //y++;
             }
 
@@ -81,7 +93,7 @@ public class HexView extends JTextArea
 //                y = lines-1;
 //            }
 
-            if (lastKey == KeyEvent.VK_RIGHT)
+            if (lastKey != KeyEvent.VK_LEFT)
             {
                 if ((x + 1) % 3 == 0)
                 {
@@ -116,15 +128,15 @@ public class HexView extends JTextArea
             public void insertString(int offs, String str, AttributeSet a)
                     throws BadLocationException
             {
-
-                String text = this.getText(0, this.getLength());
-
-                if (offs < text.length())
+                System.out.println (str + " " + offs);
+                if (str.length() == 1)
                 {
-                    super.remove(offs, str.length());
+                    if (!isHexChar(str.charAt(0)))
+                        return;
+                    
+                    super.remove(offs, 1);
                 }
                 super.insertString(offs, str, a);
-
             }
         };
         return doc;
