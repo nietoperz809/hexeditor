@@ -7,6 +7,7 @@
 package hexeditor;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JTextArea;
@@ -29,39 +30,13 @@ public class HexView extends JTextArea
     static final int LEFTMARGIN = 6;
     static final int RIGHTMARGIN = 28;
     static final int TOPMARGIN = 0;
-    static final int BOTTOMMARGIN = 8_191;
+    static final int BOTTOMMARGIN = 8191;
     final int[] memory;
-    final static char[] digits = 
-    {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-    };
 
     private int lastKey;
-    int x;
-    int y;
+    private final Point CurrentEditorPos = new Point();
 
-    public static String toHex8 (int in)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(digits[(in>>>4)&0x0f]);
-        sb.append(digits[in&0x0f]);
-        return sb.toString();
-    }
-
-    public static String toHex16 (int in)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append (toHex8(in>>8));
-        sb.append (toHex8(in));
-        return sb.toString();
-    }
-    
-    public static int readHex (String in)
-    {
-        return Integer.parseInt(in.trim(), 16);
-    }
-    
-    KeyListener keyListener = new KeyListener()
+    private final KeyListener keyListener = new KeyListener()
     {
         @Override
         public void keyTyped(KeyEvent e)
@@ -71,7 +46,6 @@ public class HexView extends JTextArea
         @Override
         public void keyPressed(KeyEvent e)
         {
-            System.out.println (e);
             if (e.getKeyCode() == 8 || e.getKeyCode() == 127)
             {
                 e.consume(); // Eat DEL and BS
@@ -86,7 +60,7 @@ public class HexView extends JTextArea
         }
     };
 
-    NavigationFilter filter = new NavigationFilter()
+    private final NavigationFilter filter = new NavigationFilter()
     {
         int topdetect;
         int downdetect;
@@ -94,15 +68,15 @@ public class HexView extends JTextArea
         @Override
         public void setDot(NavigationFilter.FilterBypass fb, int dot, Position.Bias bias)
         {
-            x = dot % LINECHARS;
-            y = dot / LINECHARS;
+            CurrentEditorPos.x = dot % LINECHARS;
+            CurrentEditorPos.y = dot / LINECHARS;
 
-            if (lastKey == KeyEvent.VK_UP && y == TOPMARGIN)
+            if (lastKey == KeyEvent.VK_UP && CurrentEditorPos.y == TOPMARGIN)
             {
                 topdetect++;
                 if (topdetect == 2)
                 {
-                    y = BOTTOMMARGIN;
+                    CurrentEditorPos.y = BOTTOMMARGIN;
                     topdetect = 0;
                 }
             }
@@ -111,12 +85,12 @@ public class HexView extends JTextArea
                 topdetect = 0;
             }
 
-            if (lastKey == KeyEvent.VK_DOWN && y == BOTTOMMARGIN)
+            if (lastKey == KeyEvent.VK_DOWN && CurrentEditorPos.y == BOTTOMMARGIN)
             {
                 downdetect++;
                 if (downdetect == 2)
                 {
-                    y = TOPMARGIN;
+                    CurrentEditorPos.y = TOPMARGIN;
                     downdetect = 0;
                 }
             }
@@ -125,79 +99,78 @@ public class HexView extends JTextArea
                 downdetect = 0;
             }
 
-            if ((x + 1) % 3 == 0)
+            if ((CurrentEditorPos.x + 1) % 3 == 0)
             {
                 if (lastKey == KeyEvent.VK_LEFT)
                 {
-                    x--;
+                    CurrentEditorPos.x--;
                 }
                 else
                 {
-                    x++;
+                    CurrentEditorPos.x++;
                 }
             }
 
-            if (x < LEFTMARGIN)
+            if (CurrentEditorPos.x < LEFTMARGIN)
             {
-                x = RIGHTMARGIN;
-                if (y != 0)
+                CurrentEditorPos.x = RIGHTMARGIN;
+                if (CurrentEditorPos.y != 0)
                 {
-                    y--;
+                    CurrentEditorPos.y--;
                 }
                 else
                 {
-                    y = BOTTOMMARGIN;
+                    CurrentEditorPos.y = BOTTOMMARGIN;
                 }
             }
-            else if (x > RIGHTMARGIN)
+            else if (CurrentEditorPos.x > RIGHTMARGIN)
             {
-                x = LEFTMARGIN;
-                if (y < BOTTOMMARGIN)
+                CurrentEditorPos.x = LEFTMARGIN;
+                if (CurrentEditorPos.y < BOTTOMMARGIN)
                 {
-                    y++;
+                    CurrentEditorPos.y++;
                 }
                 else
                 {
-                    y = TOPMARGIN;
+                    CurrentEditorPos.y = TOPMARGIN;
                 }
             }
 
-            fb.setDot(y * LINECHARS + x, bias);
+            fb.setDot(CurrentEditorPos.y * LINECHARS + CurrentEditorPos.x, bias);
         }
 
         @Override
         public void moveDot(NavigationFilter.FilterBypass fb, int dot, Position.Bias bias)
         {
             //fb.moveDot(dot, bias);
-            
         }
     };
 
     public HexView(int[] mem)
     {
         super();
-        
+
         Highlighter.HighlightPainter Painter1 = new DefaultHighlighter.DefaultHighlightPainter(Color.black);
         Highlighter.HighlightPainter Painter2 = new DefaultHighlighter.DefaultHighlightPainter(Color.GRAY);
         try
         {
             Highlighter hl = getHighlighter();
-            for (int s=0; s<8192*41; s+=41)
+            for (int s = 0; s < 8192 * 41; s += 41)
             {
-                hl.addHighlight (s, s+5, Painter1);
-                hl.addHighlight (s+32, s+40, Painter2);
+                hl.addHighlight(s, s + 5, Painter1);
+                hl.addHighlight(s + 32, s + 40, Painter2);
             }
         }
         catch (BadLocationException ex)
         {
-            System.out.println (ex);
+            System.out.println(ex);
         }
-        
+
         this.setNavigationFilter(filter);
         this.addKeyListener(keyListener);
-        this.setDocument(createOverwriteDocument());
+        this.setDocument(plainDoc);
         memory = mem;
-        
+
         populate();
     }
 
@@ -217,86 +190,61 @@ public class HexView extends JTextArea
         return b;
     }
 
-    private int getHexIndex(char c)
-    {
-        for (int n = 0; n < digits.length; n++)
-        {
-            if (Character.toUpperCase(c) == digits[n])
-            {
-                return n;
-            }
-        }
-        return -1;
-    }
 
-    private Document createOverwriteDocument()
+    private final Document plainDoc = new PlainDocument()
     {
-        Document doc = new PlainDocument()
+        @Override
+        public void insertString(int offs, String str, AttributeSet a)
+                throws BadLocationException
         {
-            @Override
-            public void insertString(int offs, String str, AttributeSet a)
-                    throws BadLocationException
+            if (str.length() == 1)
             {
-                if (str.length() == 1)
+                int n = HexTools.getHexIndex(str.charAt(0));
+                if (n == -1)
                 {
-                    int n = getHexIndex(str.charAt(0));
-                    if (n == -1)
-                    {
-                        return;
-                    }
-
-                    int xmem = x / 3 - LEFTMARGIN / 3;
-                    int xr = x % 3;
-                    int memoffset = xmem + y * 8;
-
-                    int charidx = y * LINECHARS + 32 + xmem;
-
-                    char nval;
-                    if (xr == 0)
-                    {
-                        nval = (char) setHiNibble(memoffset, n);
-                    }
-                    else
-                    {
-                        nval = (char) setLoNibble(memoffset, n);
-                    }
-                    if (Character.isISOControl(nval))
-                    {
-                        nval = '.';
-                    }
-                    super.remove(charidx, 1);
-                    super.insertString(charidx, "" + nval, a);
-
-                    //System.out.println("X:" + xmem + " Y:" + y + " xr: "+ xr);
-                    //System.out.println(memoffset);
-                    super.remove(offs, 1);
+                    return;
                 }
-                super.insertString(offs, str, a);
-            }
-        };
-        return doc;
-    }
 
-    String toHex(int b)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(digits[(b >>> 4) & 0x0f]);
-        sb.append(digits[b & 0x0f]);
-        return sb.toString();
-    }
+                int xmem = CurrentEditorPos.x / 3 - LEFTMARGIN / 3;
+                int xr = CurrentEditorPos.x % 3;
+                int memoffset = xmem + CurrentEditorPos.y * 8;
+
+                int charidx = CurrentEditorPos.y * LINECHARS + 32 + xmem;
+
+                char nval;
+                if (xr == 0)
+                {
+                    nval = (char) setHiNibble(memoffset, n);
+                }
+                else
+                {
+                    nval = (char) setLoNibble(memoffset, n);
+                }
+                if (Character.isISOControl(nval))
+                {
+                    nval = '.';
+                }
+                super.remove(charidx, 1);
+                super.insertString(charidx, "" + nval, a);
+
+                super.remove(offs, 1);
+            }
+            super.insertString(offs, str, a);
+        }
+    };
+
 
     private void populate()
     {
         StringBuilder sb = new StringBuilder();
         for (int n = 0; n < memory.length; n += 8)
         {
-            sb.append(toHex((byte) (n >> 8)));
-            sb.append(toHex((byte) n));
+            sb.append(HexTools.toHex16(n));
             sb.append(':');
             sb.append(' ');
             for (int m = 0; m < 8; m++)
             {
-                sb.append(toHex(memory[n + m]));
+                sb.append(HexTools.toHex8(memory[n + m]));
                 sb.append(' ');
             }
             sb.append('-');

@@ -206,21 +206,21 @@ public class TestFrame extends javax.swing.JFrame
 
     private void display()
     {
-        textA.setText (HexView.toHex8(cpu.getAC()));
-        textS.setText (HexView.toHex8(cpu.getSP()));
-        textP.setText (HexView.toHex8(cpu.getSR()));        
-        textX.setText (HexView.toHex8(cpu.getXR()));        
-        textY.setText (HexView.toHex8(cpu.getYR()));        
-        textPC.setText (HexView.toHex16(cpu.getPC()));            
+        textA.setText (HexTools.toHex8(cpu.getAC()));
+        textS.setText (HexTools.toHex8(cpu.getSP()));
+        textP.setText (HexTools.toHex8(cpu.getSR()));        
+        textX.setText (HexTools.toHex8(cpu.getXR()));        
+        textY.setText (HexTools.toHex8(cpu.getYR()));        
+        textPC.setText (HexTools.toHex16(cpu.getPC()));            
     }
     
     private void read()
     {
-        cpu.setAC (HexView.readHex(textA.getText()));
-        cpu.setSP (HexView.readHex(textS.getText()));
-        cpu.setSR (HexView.readHex(textP.getText()));
-        cpu.setXR (HexView.readHex(textX.getText()));
-        cpu.setYR (HexView.readHex(textY.getText()));
+        cpu.setAC (HexTools.readHex(textA.getText()));
+        cpu.setSP (HexTools.readHex(textS.getText()));
+        cpu.setSR (HexTools.readHex(textP.getText()));
+        cpu.setXR (HexTools.readHex(textX.getText()));
+        cpu.setYR (HexTools.readHex(textY.getText()));
     }
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
