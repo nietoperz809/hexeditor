@@ -62,8 +62,8 @@ public class HexView extends JTextArea
 
     private final NavigationFilter filter = new NavigationFilter()
     {
-        int topdetect;
-        int downdetect;
+        private int topdetect;
+        private int downdetect;
 
         @Override
         public void setDot(NavigationFilter.FilterBypass fb, int dot, Position.Bias bias)
@@ -146,51 +146,6 @@ public class HexView extends JTextArea
         }
     };
 
-    public HexView(int[] mem)
-    {
-        super();
-
-        Highlighter.HighlightPainter Painter1 = new DefaultHighlighter.DefaultHighlightPainter(Color.black);
-        Highlighter.HighlightPainter Painter2 = new DefaultHighlighter.DefaultHighlightPainter(Color.GRAY);
-        try
-        {
-            Highlighter hl = getHighlighter();
-            for (int s = 0; s < 8192 * 41; s += 41)
-            {
-                hl.addHighlight(s, s + 5, Painter1);
-                hl.addHighlight(s + 32, s + 40, Painter2);
-            }
-        }
-        catch (BadLocationException ex)
-        {
-            System.out.println(ex);
-        }
-
-        this.setNavigationFilter(filter);
-        this.addKeyListener(keyListener);
-        this.setDocument(plainDoc);
-        memory = mem;
-
-        populate();
-    }
-
-    private int setHiNibble(int offset, int val)
-    {
-        int b = memory[offset];
-        b = (b & 0x0f) | ((val << 4) & 0xf0);
-        memory[offset] = (byte) b;
-        return b;
-    }
-
-    private int setLoNibble(int offset, int val)
-    {
-        int b = memory[offset];
-        b = (b & 0xf0) | (val & 0x0f);
-        memory[offset] = (byte) b;
-        return b;
-    }
-
-
     private final Document plainDoc = new PlainDocument()
     {
         @Override
@@ -202,6 +157,7 @@ public class HexView extends JTextArea
                 int n = HexTools.getHexIndex(str.charAt(0));
                 if (n == -1)
                 {
+                    super.insertString(offs, str, a);
                     return;
                 }
 
@@ -233,6 +189,85 @@ public class HexView extends JTextArea
         }
     };
 
+    public HexView(int[] mem)
+    {
+        super();
+
+        Highlighter.HighlightPainter Painter1 = new DefaultHighlighter.DefaultHighlightPainter(Color.black);
+        Highlighter.HighlightPainter Painter2 = new DefaultHighlighter.DefaultHighlightPainter(Color.GRAY);
+        try
+        {
+            Highlighter hl = getHighlighter();
+            for (int s = 0; s < 8192 * 41; s += 41)
+            {
+                hl.addHighlight(s, s + 5, Painter1);
+                hl.addHighlight(s + 32, s + 40, Painter2);
+            }
+        }
+        catch (BadLocationException ex)
+        {
+            System.out.println(ex);
+        }
+
+        this.setNavigationFilter(filter);
+        this.addKeyListener(keyListener);
+        this.setDocument(plainDoc);
+        memory = mem;
+
+        populate();
+
+        try
+        {
+            setByteInMemory(128, 0xff);
+            setByteInMemory(0x87, 0x12);
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
+    /**
+     * Set a new byte in memory as well as in hex window
+     * @param offset Offset of memory address
+     * @param b New byte
+     * @throws java.lang.Exception
+     */
+    public void setByteInMemory(int offset, int b) throws Exception
+    {
+        memory[offset] = b & 0xff;
+
+        int rem = (offset % 8);
+        int y = (offset / 8) * LINECHARS;
+
+        int hexidx = rem * 3 + LEFTMARGIN + y;
+        plainDoc.remove(hexidx, 2);
+        plainDoc.insertString(hexidx, HexTools.toHex8(b), null);
+
+        int charidx = rem + 32 + y;
+        if (Character.isISOControl(b))
+        {
+            b = '.';
+        }
+        plainDoc.remove(charidx, 1);
+        plainDoc.insertString(charidx, ""+(char)b, null);
+    }
+
+    private int setHiNibble(int offset, int val)
+    {
+        int b = memory[offset];
+        b = (b & 0x0f) | ((val << 4) & 0xf0);
+        memory[offset] = (byte) b;
+        return b;
+    }
+
+    private int setLoNibble(int offset, int val)
+    {
+        int b = memory[offset];
+        b = (b & 0xf0) | (val & 0x0f);
+        memory[offset] = (byte) b;
+        return b;
+    }
 
     private void populate()
     {

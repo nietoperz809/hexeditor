@@ -11,13 +11,13 @@ package hexeditor;
  */
 public class HexTools
 {
-    private static final char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-    static int getHexIndex(char c)
+    public static int getHexIndex(char c)
     {
         for (int n = 0; n < digits.length; n++)
         {
-            if (Character.toUpperCase(c) == digits[n])
+            if (Character.toUpperCase(c) == Character.toUpperCase(digits[n]))
             {
                 return n;
             }
@@ -45,5 +45,4 @@ public class HexTools
         sb.append(toHex8(in));
         return sb.toString();
     }
-
 }
