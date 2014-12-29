@@ -14,16 +14,20 @@ public class Addr6502Parser
     MODE parsed_mode = MODE.INVALID;
     int parsed_operand = -1;
     int parsed_instruction = -1;
+    int parsed_length = -1;
     
     @Override
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
+        sb.append ("Mode:");
         sb.append (parsed_mode);
-        sb.append (" | ");
-        sb.append (parsed_operand);
-        sb.append (" | ");
-        sb.append (Integer.toHexString(parsed_instruction));
+        sb.append (" Opcode:");
+        sb.append (parsed_instruction);
+        sb.append (" Operand:");
+        sb.append (Integer.toHexString(parsed_operand));
+        sb.append (" Len:");
+        sb.append (parsed_length);
         return sb.toString();
     }
     
@@ -56,6 +60,23 @@ public class Addr6502Parser
         INVALID
     }
 
+    public static final int addrModeLen[] = 
+    {
+	1, // accumulator
+	2, // immediate
+	2, // zero page
+	2, // zero page, x
+	2, // zero page, y
+	3, // absolute
+	3, // absolute, x
+	3, // absolute, y
+	1, // implied
+	2, // relative
+	2, // indirect, x
+	2, // indirect, y
+	3  // indirect
+};
+    
     /**
 	*	A table used when calculating the machine codes for an opcode.
 	*	Two indeces are used. The first is the opcode define, see 'opcodes' defines at top of this file.
@@ -147,11 +168,11 @@ public class Addr6502Parser
         {
             if (in.charAt(0) == '$')
             {
-                return Integer.parseInt(in.substring(1), 16);
+                return Integer.parseInt(in.substring(1), 16) & 0xffff;
             }
             else
             {
-                return Integer.parseInt(in);
+                return Integer.parseInt(in) & 0xffff;
             }
         }
         catch (NumberFormatException e)
@@ -162,14 +183,15 @@ public class Addr6502Parser
     
     private static Addr6502Parser parseOP (String op) throws Exception
     {
-        op = op.toUpperCase();
         Addr6502Parser pa = new Addr6502Parser();
         
-        if (op.isEmpty())
+        if (op == null || op.isEmpty())
         {
             pa.parsed_mode = MODE.IMPL;
             return pa;
         }
+        
+        op = op.toUpperCase();
         
         int k1;
         int k2;
@@ -214,18 +236,20 @@ public class Addr6502Parser
             default:
             k1 = op.indexOf(",X");
             k2 = op.indexOf(",Y");
-            if (k1 > 0 || k2 > 0)
+            if (k1 > 0)
             {
                 pa.parsed_operand = readNumber (op.substring(0, k1));
-                if (k1 > 0)
-                    pa.parsed_mode = pa.parsed_operand > 0xff ? MODE.ABSX : MODE.ZPX;
-                else if (k2 > 0)
-                    pa.parsed_mode = pa.parsed_operand > 0xff ? MODE.ABSY : MODE.ZPY;
+                pa.parsed_mode = pa.parsed_operand > 0xff ? MODE.ABSX : MODE.ZPX;
+            }
+            else if (k2 > 0)
+            {
+                pa.parsed_operand = readNumber (op.substring(0, k2));
+                pa.parsed_mode = pa.parsed_operand > 0xff ? MODE.ABSY : MODE.ZPY;
             }
             else
             {
                 pa.parsed_operand = readNumber (op);
-                pa.parsed_mode = pa.parsed_operand > 0xff ? MODE.ABS : MODE.ZP;
+                pa.parsed_mode = op.length() >=4 ? MODE.ABS : MODE.ZP;
             }
             break;
         }
@@ -237,9 +261,11 @@ public class Addr6502Parser
     {
         int rawinst = findInstruction(instr);
         Addr6502Parser pa = parseOP(op);
-        pa.parsed_instruction = machineCodeMatrix[rawinst][pa.parsed_mode.ordinal()];
+        int addrindex = pa.parsed_mode.ordinal();
+        pa.parsed_instruction = machineCodeMatrix[rawinst][addrindex];
         if (pa.parsed_instruction == -1)
             throw new Exception ("Addr mode not allowed with this opcode");
+        pa.parsed_length = addrModeLen[addrindex]; 
         return pa;
     }
     

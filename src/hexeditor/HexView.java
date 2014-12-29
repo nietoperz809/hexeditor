@@ -13,11 +13,10 @@ import java.awt.event.KeyListener;
 import javax.swing.JTextArea;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.NavigationFilter;
-import javax.swing.text.PlainDocument;
 import javax.swing.text.Position;
 
 /**
@@ -51,12 +50,16 @@ public class HexView extends JTextArea
                 e.consume(); // Eat DEL and BS
                 return;
             }
+            DefaultCaret caret = (DefaultCaret) getCaret();
+            caret.setUpdatePolicy (DefaultCaret.ALWAYS_UPDATE); 
             lastKey = e.getKeyCode();
         }
 
         @Override
         public void keyReleased(KeyEvent e)
         {
+            DefaultCaret caret = (DefaultCaret) getCaret();
+            caret.setUpdatePolicy (DefaultCaret.NEVER_UPDATE); 
         }
     };
 
@@ -146,7 +149,6 @@ public class HexView extends JTextArea
         }
     };
 
-    
     private final PlainDoc2 plainDoc = new PlainDoc2()
     {
         @Override
@@ -181,7 +183,7 @@ public class HexView extends JTextArea
                     nval = '.';
                 }
                 super.remove(charidx, 1);
-                super.insertString(charidx, Character.toString((char)nval), a);
+                super.insertString(charidx, Character.toString((char) nval), a);
 
                 super.remove(offs, 1);
             }
@@ -212,6 +214,7 @@ public class HexView extends JTextArea
         this.setNavigationFilter(filter);
         this.addKeyListener(keyListener);
         this.setDocument(plainDoc);
+
         memory = mem;
 
         populate();
@@ -219,6 +222,7 @@ public class HexView extends JTextArea
 
     /**
      * Set a new byte in memory as well as in hex window
+     *
      * @param offset Offset of memory address
      * @param b New byte
      * @throws java.lang.Exception
@@ -232,18 +236,18 @@ public class HexView extends JTextArea
 
         int hexidx = rem * 3 + LEFTMARGIN + y;
         plainDoc.remove(hexidx, 2);
-        plainDoc.insertString2 (hexidx, HexTools.toHex8(b), null);
+        plainDoc.insertString2(hexidx, HexTools.toHex8(b), null);
 
         int charidx = rem + 32 + y;
         if (Character.isISOControl(b))
         {
             b = '.';
         }
-        plainDoc.remove (charidx, 1);
-        plainDoc.insertString2 (charidx, Character.toString((char)b), null);
+        plainDoc.remove(charidx, 1);
+        plainDoc.insertString2(charidx, Character.toString((char) b), null);
     }
 
-    private int setHiNibble (int offset, int val)
+    private int setHiNibble(int offset, int val)
     {
         int b = memory[offset];
         b = (b & 0x0f) | ((val << 4) & 0xf0);

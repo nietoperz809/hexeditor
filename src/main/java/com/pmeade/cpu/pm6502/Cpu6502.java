@@ -266,6 +266,7 @@ public interface Cpu6502
     public int getYR();
     public void reset();
     public void setMemoryIO(MemoryIO mem);
+    public void setPC(int i);
     public void setAC(int i);
     public void setSP(int i);
     public void setSR(int i);

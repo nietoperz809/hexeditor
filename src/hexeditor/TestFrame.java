@@ -251,6 +251,7 @@ public class TestFrame extends javax.swing.JFrame
         cpu.setSR(HexTools.readHex(textP.getText()));
         cpu.setXR(HexTools.readHex(textX.getText()));
         cpu.setYR(HexTools.readHex(textY.getText()));
+        cpu.setPC(HexTools.readHex(textPC.getText()));
     }
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
@@ -275,18 +276,23 @@ public class TestFrame extends javax.swing.JFrame
      */
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton3ActionPerformed
     {//GEN-HEADEREND:event_jButton3ActionPerformed
+        origin = 0;
         String[] txt = asmTxt.getText().split("\n");
         out:
-        for (int it = 0; it < txt.length; it++)
+        for (String txt1 : txt)
         {
-            int sep = txt[it].indexOf(' ');
+            int sep = txt1.indexOf(' ');
+            String cmd;
+            String args = null;
             if (sep == -1)
             {
-                System.out.println("err in line " + (it + 1));
-                break;
+                cmd = txt1;
             }
-            String cmd = txt[it].substring(0, sep).trim().toUpperCase();
-            String args = txt[it].substring(sep).replaceAll("\\s", "").toUpperCase();
+            else
+            {
+                cmd = txt1.substring(0, sep).trim().toUpperCase();
+                args = txt1.substring(sep).replaceAll("\\s", "").toUpperCase();
+            }
             //System.out.println (cmd+":"+args);
             int val;
             switch (cmd)
@@ -323,6 +329,33 @@ public class TestFrame extends javax.swing.JFrame
                         }
                     }
                     break;
+
+                default:
+                {
+                    try
+                    {
+                        Addr6502Parser p = Addr6502Parser.parse(cmd, args);
+                        ((HexView) hexView).setByteInMemory(origin, p.parsed_instruction);
+                        origin++;
+                        if (p.parsed_length == 3)
+                        {
+                            ((HexView) hexView).setByteInMemory(origin, p.parsed_operand);    
+                            origin++;
+                            ((HexView) hexView).setByteInMemory(origin, p.parsed_operand>>>8);    
+                            origin++;
+                        }
+                        if (p.parsed_length == 2)
+                        {
+                            ((HexView) hexView).setByteInMemory(origin, p.parsed_operand);    
+                            origin++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.out.println (ex);
+                    }
+                }
+                break;
             }
         }
     }//GEN-LAST:event_jButton3ActionPerformed

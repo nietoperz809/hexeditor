@@ -533,6 +533,12 @@ public class PM6502 implements Cpu6502
     }
 
     @Override
+    public void setPC(int i)
+    {
+        this.pc = i;
+    }
+    
+    @Override
     public void setAC(int ac)
     {
         this.ac = ac;
@@ -810,4 +816,5 @@ public class PM6502 implements Cpu6502
     private int s2;
     private int s3;
     private int s4;
+
 }
