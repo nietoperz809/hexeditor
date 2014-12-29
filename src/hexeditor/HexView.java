@@ -31,7 +31,7 @@ public class HexView extends JTextArea
     static final int RIGHTMARGIN = 28;
     static final int TOPMARGIN = 0;
     static final int BOTTOMMARGIN = 8191;
-    final int[] memory;
+    private final int[] memory;
 
     private int lastKey;
     private final Point CurrentEditorPos = new Point();
@@ -146,7 +146,8 @@ public class HexView extends JTextArea
         }
     };
 
-    private final Document plainDoc = new PlainDocument()
+    
+    private final PlainDoc2 plainDoc = new PlainDoc2()
     {
         @Override
         public void insertString(int offs, String str, AttributeSet a)
@@ -157,7 +158,6 @@ public class HexView extends JTextArea
                 int n = HexTools.getHexIndex(str.charAt(0));
                 if (n == -1)
                 {
-                    super.insertString(offs, str, a);
                     return;
                 }
 
@@ -181,7 +181,7 @@ public class HexView extends JTextArea
                     nval = '.';
                 }
                 super.remove(charidx, 1);
-                super.insertString(charidx, "" + nval, a);
+                super.insertString(charidx, Character.toString((char)nval), a);
 
                 super.remove(offs, 1);
             }
@@ -215,16 +215,6 @@ public class HexView extends JTextArea
         memory = mem;
 
         populate();
-
-        try
-        {
-            setByteInMemory(128, 0xff);
-            setByteInMemory(0x87, 0x12);
-        }
-        catch (Exception ex)
-        {
-
-        }
     }
 
     /**
@@ -242,18 +232,18 @@ public class HexView extends JTextArea
 
         int hexidx = rem * 3 + LEFTMARGIN + y;
         plainDoc.remove(hexidx, 2);
-        plainDoc.insertString(hexidx, HexTools.toHex8(b), null);
+        plainDoc.insertString2 (hexidx, HexTools.toHex8(b), null);
 
         int charidx = rem + 32 + y;
         if (Character.isISOControl(b))
         {
             b = '.';
         }
-        plainDoc.remove(charidx, 1);
-        plainDoc.insertString(charidx, ""+(char)b, null);
+        plainDoc.remove (charidx, 1);
+        plainDoc.insertString2 (charidx, Character.toString((char)b), null);
     }
 
-    private int setHiNibble(int offset, int val)
+    private int setHiNibble (int offset, int val)
     {
         int b = memory[offset];
         b = (b & 0x0f) | ((val << 4) & 0xf0);

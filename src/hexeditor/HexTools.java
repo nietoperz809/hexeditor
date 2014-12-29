@@ -35,9 +35,37 @@ public class HexTools
 
     public static int readHex(String in)
     {
-        return Integer.parseInt(in.trim(), 16);
+        try
+        {
+            return Integer.parseInt(in.trim(), 16);
+        }
+        catch (Exception ex)
+        {
+            return -1;
+        }
+    }
+    
+    public static int readHex6502 (String in)
+    {
+        if (in.charAt(0) != '$')
+            return -1;
+        return (readHex (in.substring(1)));
     }
 
+    public static int readHex6502Byte (String in)
+    {
+        if (in.length() != 3)
+            return -1;
+        return readHex6502 (in);
+    }
+
+    public static int readHex6502Word (String in)
+    {
+        if (in.length() != 5)
+            return -1;
+        return readHex6502 (in);
+    }
+    
     public static String toHex16(int in)
     {
         StringBuilder sb = new StringBuilder();

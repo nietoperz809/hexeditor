@@ -17,10 +17,10 @@ public class TestFrame extends javax.swing.JFrame
 {
     int[] memory = new int[0x10000];
     Cpu6502 cpu = new PM6502();
-    
+
     MemoryIO io = new MemoryIO()
     {
-       @Override
+        @Override
         public int read(int address)
         {
             return memory[address] & 0xff;
@@ -29,10 +29,17 @@ public class TestFrame extends javax.swing.JFrame
         @Override
         public void write(int address, int data)
         {
-            memory[address] = (data & 0xff);
+            try
+            {
+                ((HexView) hexView).setByteInMemory(address, data);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     };
-    
+
     /**
      * Creates new form TestFrame
      */
@@ -53,7 +60,7 @@ public class TestFrame extends javax.swing.JFrame
     {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new HexView(memory);
+        hexView = new HexView(memory);
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -69,18 +76,21 @@ public class TestFrame extends javax.swing.JFrame
         textS = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        asmTxt = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(547, 615));
+        setPreferredSize(new java.awt.Dimension(815, 615));
 
         jScrollPane1.setPreferredSize(new java.awt.Dimension(267, 101));
 
-        jTextArea1.setBackground(new java.awt.Color(0, 102, 102));
-        jTextArea1.setColumns(20);
-        jTextArea1.setFont(new java.awt.Font("Lucida Console", 1, 18)); // NOI18N
-        jTextArea1.setForeground(new java.awt.Color(255, 255, 102));
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        hexView.setBackground(new java.awt.Color(0, 102, 102));
+        hexView.setColumns(20);
+        hexView.setFont(new java.awt.Font("Lucida Console", 1, 18)); // NOI18N
+        hexView.setForeground(new java.awt.Color(255, 255, 102));
+        hexView.setRows(5);
+        jScrollPane1.setViewportView(hexView);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
@@ -134,6 +144,15 @@ public class TestFrame extends javax.swing.JFrame
             }
         });
 
+        jButton3.setText("Complie");
+        jButton3.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -161,20 +180,24 @@ public class TestFrame extends javax.swing.JFrame
                         .addComponent(textS, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(textY, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(textPC, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29)
-                        .addComponent(jButton1)
+                        .addComponent(textPC, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)))
-                .addContainerGap(134, Short.MAX_VALUE))
+                        .addComponent(textY, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(29, 29, 29)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addContainerGap())
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 121, Short.MAX_VALUE)
+                        .addComponent(jButton3))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -185,7 +208,9 @@ public class TestFrame extends javax.swing.JFrame
                     .addComponent(jLabel2)
                     .addComponent(jLabel3)
                     .addComponent(textX, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(textY, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(textY, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2)
+                    .addComponent(jButton3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -194,35 +219,40 @@ public class TestFrame extends javax.swing.JFrame
                     .addComponent(textPC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(textP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(textS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(jButton1))
                 .addGap(0, 9, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
+
+        asmTxt.setColumns(20);
+        asmTxt.setRows(5);
+        jScrollPane2.setViewportView(asmTxt);
+
+        getContentPane().add(jScrollPane2, java.awt.BorderLayout.EAST);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void display()
     {
-        textA.setText (HexTools.toHex8(cpu.getAC()));
-        textS.setText (HexTools.toHex8(cpu.getSP()));
-        textP.setText (HexTools.toHex8(cpu.getSR()));        
-        textX.setText (HexTools.toHex8(cpu.getXR()));        
-        textY.setText (HexTools.toHex8(cpu.getYR()));        
-        textPC.setText (HexTools.toHex16(cpu.getPC()));            
+        textA.setText(HexTools.toHex8(cpu.getAC()));
+        textS.setText(HexTools.toHex8(cpu.getSP()));
+        textP.setText(HexTools.toHex8(cpu.getSR()));
+        textX.setText(HexTools.toHex8(cpu.getXR()));
+        textY.setText(HexTools.toHex8(cpu.getYR()));
+        textPC.setText(HexTools.toHex16(cpu.getPC()));
     }
-    
+
     private void read()
     {
-        cpu.setAC (HexTools.readHex(textA.getText()));
-        cpu.setSP (HexTools.readHex(textS.getText()));
-        cpu.setSR (HexTools.readHex(textP.getText()));
-        cpu.setXR (HexTools.readHex(textX.getText()));
-        cpu.setYR (HexTools.readHex(textY.getText()));
+        cpu.setAC(HexTools.readHex(textA.getText()));
+        cpu.setSP(HexTools.readHex(textS.getText()));
+        cpu.setSR(HexTools.readHex(textP.getText()));
+        cpu.setXR(HexTools.readHex(textX.getText()));
+        cpu.setYR(HexTools.readHex(textY.getText()));
     }
-    
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
     {//GEN-HEADEREND:event_jButton1ActionPerformed
         read();
@@ -235,6 +265,67 @@ public class TestFrame extends javax.swing.JFrame
         cpu.reset();
         display();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private int origin = 0;
+
+    /**
+     * Compile Button clicked
+     *
+     * @param evt
+     */
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton3ActionPerformed
+    {//GEN-HEADEREND:event_jButton3ActionPerformed
+        String[] txt = asmTxt.getText().split("\n");
+        out:
+        for (int it = 0; it < txt.length; it++)
+        {
+            int sep = txt[it].indexOf(' ');
+            if (sep == -1)
+            {
+                System.out.println("err in line " + (it + 1));
+                break;
+            }
+            String cmd = txt[it].substring(0, sep).trim().toUpperCase();
+            String args = txt[it].substring(sep).replaceAll("\\s", "").toUpperCase();
+            //System.out.println (cmd+":"+args);
+            int val;
+            switch (cmd)
+            {
+                case ".ORG":
+                    val = HexTools.readHex6502(args);
+                    if (val == -1)
+                    {
+                        System.out.println("wrong arg");
+                        break out;
+                    }
+                    origin = val;
+                    break;
+
+                case ".BYT":
+                    String[] bytes = args.split(",");
+                    for (String byte1 : bytes)
+                    {
+                        val = HexTools.readHex6502Byte(byte1);
+                        if (val == -1)
+                        {
+                            System.out.println("err in bytes");
+                            break out;
+                        }
+                        try
+                        {
+                            ((HexView) hexView).setByteInMemory(origin, val);
+                            origin++;
+                        }
+                        catch (Exception ex)
+                        {
+                            System.out.println("Byte inser err");
+                            break out;
+                        }
+                    }
+                    break;
+            }
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -276,8 +367,11 @@ public class TestFrame extends javax.swing.JFrame
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea asmTxt;
+    private javax.swing.JTextArea hexView;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -286,7 +380,7 @@ public class TestFrame extends javax.swing.JFrame
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField textA;
     private javax.swing.JTextField textP;
     private javax.swing.JTextField textPC;
