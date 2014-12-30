@@ -11,6 +11,12 @@ package hexeditor;
  */
 public class DisASM6502
 {
+    /**
+     * Disasms one instruction
+     * @param memory Points to 6502 RAM/ROM
+     * @param offset Address to start disassembling
+     * @return Disassembled instruction
+     */
     public static String disasm (int[] memory, int offset)
     {
         StringBuilder sb = new StringBuilder();
@@ -73,6 +79,7 @@ public class DisASM6502
                 
             case REL:
             sb.append ("*");
+            arg = (byte)arg;
             if (arg >= 0)
                 sb.append ('+');
             sb.append (Integer.toString(arg));

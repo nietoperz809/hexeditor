@@ -161,7 +161,7 @@ public class ASM6502
         return pa;
     }
 
-    static int findOpcode (String instr, MODE addr) throws Exception
+    private static int findOpcode (String instr, MODE addr) throws Exception
     {
         instr = instr.toUpperCase();
         for (int n=0; n<Opcode.opcodes.length; n++)
@@ -174,6 +174,13 @@ public class ASM6502
         throw new Exception ("No such opcode");
     }
     
+    /**
+     * Parses one instruction an returns an ASM6502 Object containing the result
+     * @param instr The instruction
+     * @param adr The operand
+     * @return Parsed instruction
+     * @throws Exception If smth. gone wrong
+     */
     public static ASM6502 parse (String instr, String adr) throws Exception
     {
         ASM6502 pa = parseOP(adr);
