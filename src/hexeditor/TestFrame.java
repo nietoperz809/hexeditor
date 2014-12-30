@@ -334,7 +334,7 @@ public class TestFrame extends javax.swing.JFrame
                 {
                     try
                     {
-                        Addr6502Parser p = Addr6502Parser.parse(cmd, args);
+                        ASM6502 p = ASM6502.parse(cmd, args);
                         ((HexView) hexView).setByteInMemory(origin, p.parsed_instruction);
                         origin++;
                         if (p.parsed_length == 3)
