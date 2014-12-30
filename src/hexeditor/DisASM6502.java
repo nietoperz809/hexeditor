@@ -14,13 +14,16 @@ public class DisASM6502
     public static String disasm (int[] memory, int offset)
     {
         StringBuilder sb = new StringBuilder();
-        Opcode op = Opcode.opcodes[memory[offset]];
+        Opcode op = Opcode.opcodes[memory[offset & 0xffff] & 0xff];
         int arg = 0;
         if (op.length > 1)
             arg = memory[offset+1];
         if (op.length > 2)
             arg = arg | (memory[offset+2]<<8);
-        sb.append(op.code);
+        if (op.code == null)
+            sb.append ("UNDFINED");
+        else
+            sb.append(op.code);
         sb.append (' ');
         
         switch (op.addr)

@@ -77,6 +77,7 @@ public class TestFrame extends javax.swing.JFrame
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        disasmText = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         asmTxt = new javax.swing.JTextArea();
 
@@ -153,6 +154,11 @@ public class TestFrame extends javax.swing.JFrame
             }
         });
 
+        disasmText.setBackground(new java.awt.Color(51, 255, 255));
+        disasmText.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        disasmText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        disasmText.setOpaque(true);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -189,15 +195,17 @@ public class TestFrame extends javax.swing.JFrame
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(textY, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(29, 29, 29)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addContainerGap())
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(29, 29, 29)
                         .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 121, Short.MAX_VALUE)
-                        .addComponent(jButton3))))
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton1))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(disasmText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addComponent(jButton3))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -210,7 +218,8 @@ public class TestFrame extends javax.swing.JFrame
                     .addComponent(textX, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(textY, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(jButton3)
+                    .addComponent(jButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -219,8 +228,8 @@ public class TestFrame extends javax.swing.JFrame
                     .addComponent(textPC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(textP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(textS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
-                .addGap(0, 9, Short.MAX_VALUE))
+                    .addComponent(disasmText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 10, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
@@ -253,18 +262,35 @@ public class TestFrame extends javax.swing.JFrame
         cpu.setYR(HexTools.readHex(textY.getText()));
         cpu.setPC(HexTools.readHex(textPC.getText()));
     }
+    
+    private void disasm()
+    {
+        int offset = cpu.getPC();
+        String txt = DisASM6502.disasm(memory, offset);
+        disasmText.setText(txt);
+    }
 
+    /**
+     * Step
+     * @param evt 
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
     {//GEN-HEADEREND:event_jButton1ActionPerformed
         read();
         cpu.execute();
         display();
+        disasm();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    /**
+     * Reset
+     * @param evt 
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
     {//GEN-HEADEREND:event_jButton2ActionPerformed
         cpu.reset();
         display();
+        disasm();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private int origin = 0;
@@ -293,7 +319,10 @@ public class TestFrame extends javax.swing.JFrame
                 cmd = txt1.substring(0, sep).trim().toUpperCase();
                 args = txt1.substring(sep).replaceAll("\\s", "").toUpperCase();
             }
-            //System.out.println (cmd+":"+args);
+            
+            if (cmd.isEmpty())
+                continue;
+            
             int val;
             switch (cmd)
             {
@@ -353,6 +382,7 @@ public class TestFrame extends javax.swing.JFrame
                     catch (Exception ex)
                     {
                         System.out.println (ex);
+                        break out;
                     }
                 }
                 break;
@@ -401,6 +431,7 @@ public class TestFrame extends javax.swing.JFrame
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea asmTxt;
+    private javax.swing.JLabel disasmText;
     private javax.swing.JTextArea hexView;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

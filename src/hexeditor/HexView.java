@@ -276,7 +276,7 @@ public class HexView extends JTextArea
                 sb.append(HexTools.toHex8(memory[n + m]));
                 sb.append(' ');
             }
-            sb.append('-');
+            sb.append('|');
             sb.append(' ');
             for (int m = 0; m < 8; m++)
             {
