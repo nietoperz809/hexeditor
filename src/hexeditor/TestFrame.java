@@ -90,6 +90,7 @@ public class TestFrame extends javax.swing.JFrame
         flagI = new javax.swing.JCheckBox();
         flagZ = new javax.swing.JCheckBox();
         flagC = new javax.swing.JCheckBox();
+        runButton = new javax.swing.JToggleButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         asmTxt = new javax.swing.JTextArea();
 
@@ -276,6 +277,15 @@ public class TestFrame extends javax.swing.JFrame
                 .addContainerGap(11, Short.MAX_VALUE))
         );
 
+        runButton.setText("Run");
+        runButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                runButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -312,18 +322,20 @@ public class TestFrame extends javax.swing.JFrame
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton3))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton3)
+                        .addGap(39, 39, 39))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(disasmText, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(63, 63, 63)))
-                .addGap(39, 39, 39))
+                        .addGap(46, 46, 46)
+                        .addComponent(runButton)
+                        .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -342,18 +354,15 @@ public class TestFrame extends javax.swing.JFrame
                     .addComponent(textS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6)
                     .addComponent(textPC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(textP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 1, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(disasmText, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel4)
+                        .addComponent(textP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(disasmText, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(runButton))
+                .addGap(0, 7, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_END);
@@ -422,16 +431,28 @@ public class TestFrame extends javax.swing.JFrame
         disasmText.setText(txt);
     }
 
+    public synchronized void step()
+    {
+        read();
+        cpu.execute();
+        displayRegisters();
+        disasm();
+    }
+    
+    public void reset ()
+    {
+        cpu.reset();
+        displayRegisters();
+        disasm();
+    }
+    
     /**
      * Step
      * @param evt 
      */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
     {//GEN-HEADEREND:event_jButton1ActionPerformed
-        read();
-        cpu.execute();
-        displayRegisters();
-        disasm();
+        step();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -440,9 +461,7 @@ public class TestFrame extends javax.swing.JFrame
      */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
     {//GEN-HEADEREND:event_jButton2ActionPerformed
-        cpu.reset();
-        displayRegisters();
-        disasm();
+        reset();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private int origin = 0;
@@ -590,6 +609,32 @@ public class TestFrame extends javax.swing.JFrame
         actOnCheckBox(0);
     }//GEN-LAST:event_flagCActionPerformed
 
+    Runnable runner = new Runnable()
+    {
+       @Override
+        public void run()
+        {
+            step();
+        }
+    };
+    
+    Clock clock = new Clock (runner, 100);
+    
+    private void runButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_runButtonActionPerformed
+    {//GEN-HEADEREND:event_runButtonActionPerformed
+       if (runButton.isSelected())
+       {
+           runButton.setText ("Stop");
+           reset();
+           clock.endPause();
+       }
+       else
+       {
+           runButton.setText("Run");
+           clock.doPause();
+       }
+    }//GEN-LAST:event_runButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -654,6 +699,7 @@ public class TestFrame extends javax.swing.JFrame
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JToggleButton runButton;
     private javax.swing.JTextField textA;
     private javax.swing.JTextField textP;
     private javax.swing.JTextField textPC;
