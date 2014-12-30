@@ -110,14 +110,13 @@
                           <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="textPC" min="-2" pref="70" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
-                      <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="9" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="jPanel4" min="-2" pref="301" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
+                  <EmptySpace pref="9" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="jButton2" min="-2" max="-2" attributes="0"/>
@@ -348,13 +347,19 @@
           <SubComponents>
             <Component class="javax.swing.JCheckBox" name="flagS">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Z"/>
+                <Property name="text" type="java.lang.String" value="S"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="flagSActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JCheckBox" name="flagV">
               <Properties>
                 <Property name="text" type="java.lang.String" value="V"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="flagVActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JCheckBox" name="flagSpare">
               <Properties>
@@ -366,26 +371,41 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="B"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="flagBActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JCheckBox" name="flagD">
               <Properties>
                 <Property name="text" type="java.lang.String" value="D"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="flagDActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JCheckBox" name="flagI">
               <Properties>
                 <Property name="text" type="java.lang.String" value="I"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="flagIActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JCheckBox" name="flagZ">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Z"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="flagZActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JCheckBox" name="flagC">
               <Properties>
                 <Property name="text" type="java.lang.String" value="C"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="flagCActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

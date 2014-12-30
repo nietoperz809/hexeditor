@@ -5,6 +5,7 @@
  */
 package hexeditor;
 
+import javax.swing.JCheckBox;
 import main.java.com.pmeade.cpu.pm6502.Cpu6502;
 import main.java.com.pmeade.cpu.pm6502.MemoryIO;
 import main.java.com.pmeade.cpu.pm6502.PM6502;
@@ -47,6 +48,8 @@ public class TestFrame extends javax.swing.JFrame
     {
         initComponents();
         cpu.setMemoryIO(io);
+        
+        checkers = new JCheckBox[]{flagC, flagZ, flagI, flagD, flagB, flagSpare, flagV, flagS};        
     }
 
     /**
@@ -168,22 +171,71 @@ public class TestFrame extends javax.swing.JFrame
         disasmText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         disasmText.setOpaque(true);
 
-        flagS.setText("Z");
+        flagS.setText("S");
+        flagS.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                flagSActionPerformed(evt);
+            }
+        });
 
         flagV.setText("V");
+        flagV.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                flagVActionPerformed(evt);
+            }
+        });
 
         flagSpare.setText("-");
         flagSpare.setEnabled(false);
 
         flagB.setText("B");
+        flagB.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                flagBActionPerformed(evt);
+            }
+        });
 
         flagD.setText("D");
+        flagD.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                flagDActionPerformed(evt);
+            }
+        });
 
         flagI.setText("I");
+        flagI.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                flagIActionPerformed(evt);
+            }
+        });
 
         flagZ.setText("Z");
+        flagZ.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                flagZActionPerformed(evt);
+            }
+        });
 
         flagC.setText("C");
+        flagC.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                flagCActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -256,12 +308,11 @@ public class TestFrame extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(textPC, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(textPC, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton2)
@@ -328,8 +379,22 @@ public class TestFrame extends javax.swing.JFrame
         flagZ.setSelected((i & 0x02) != 0);
         flagC.setSelected((i & 0x01) != 0);
     }
+
+    private int setFlags()
+    {
+        int i = 0;
+        i |= flagS.isSelected() ? 0x80 : 0; 
+        i |= flagV.isSelected() ? 0x40 : 0; 
+        i |= flagSpare.isSelected() ? 0x20 : 0; 
+        i |= flagB.isSelected() ? 0x10 : 0; 
+        i |= flagD.isSelected() ? 0x08 : 0; 
+        i |= flagI.isSelected() ? 0x04 : 0; 
+        i |= flagZ.isSelected() ? 0x02 : 0; 
+        i |= flagC.isSelected() ? 0x01 : 0;
+        return i;
+    }
     
-    private void display()
+    private void displayRegisters()
     {
         textA.setText(HexTools.toHex8(cpu.getAC()));
         textS.setText(HexTools.toHex8(cpu.getSP()));
@@ -365,7 +430,7 @@ public class TestFrame extends javax.swing.JFrame
     {//GEN-HEADEREND:event_jButton1ActionPerformed
         read();
         cpu.execute();
-        display();
+        displayRegisters();
         disasm();
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -376,7 +441,7 @@ public class TestFrame extends javax.swing.JFrame
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
     {//GEN-HEADEREND:event_jButton2ActionPerformed
         cpu.reset();
-        display();
+        displayRegisters();
         disasm();
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -476,6 +541,54 @@ public class TestFrame extends javax.swing.JFrame
             }
         }
     }//GEN-LAST:event_jButton3ActionPerformed
+    
+    private void actOnCheckBox (int idx)
+    {
+        int i = cpu.getSR();
+        JCheckBox cb = checkers[idx];
+        int val = 1<<idx;
+        if (cb.isSelected())
+            i |= val;
+        else
+            i &= ~val;
+        cpu.setSR(i);
+        displayRegisters();
+    }
+    
+    private void flagSActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_flagSActionPerformed
+    {//GEN-HEADEREND:event_flagSActionPerformed
+        actOnCheckBox(7);
+    }//GEN-LAST:event_flagSActionPerformed
+
+    private void flagVActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_flagVActionPerformed
+    {//GEN-HEADEREND:event_flagVActionPerformed
+        actOnCheckBox(6);
+    }//GEN-LAST:event_flagVActionPerformed
+
+    private void flagBActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_flagBActionPerformed
+    {//GEN-HEADEREND:event_flagBActionPerformed
+        actOnCheckBox(4);
+    }//GEN-LAST:event_flagBActionPerformed
+
+    private void flagDActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_flagDActionPerformed
+    {//GEN-HEADEREND:event_flagDActionPerformed
+        actOnCheckBox(3);
+    }//GEN-LAST:event_flagDActionPerformed
+
+    private void flagIActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_flagIActionPerformed
+    {//GEN-HEADEREND:event_flagIActionPerformed
+        actOnCheckBox(2);
+    }//GEN-LAST:event_flagIActionPerformed
+
+    private void flagZActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_flagZActionPerformed
+    {//GEN-HEADEREND:event_flagZActionPerformed
+        actOnCheckBox(1);
+    }//GEN-LAST:event_flagZActionPerformed
+
+    private void flagCActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_flagCActionPerformed
+    {//GEN-HEADEREND:event_flagCActionPerformed
+        actOnCheckBox(0);
+    }//GEN-LAST:event_flagCActionPerformed
 
     /**
      * @param args the command line arguments
@@ -505,7 +618,7 @@ public class TestFrame extends javax.swing.JFrame
         //</editor-fold>
         //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and displayRegisters the form */
         java.awt.EventQueue.invokeLater(new Runnable()
         {
             @Override
@@ -548,4 +661,6 @@ public class TestFrame extends javax.swing.JFrame
     private javax.swing.JTextField textX;
     private javax.swing.JTextField textY;
     // End of variables declaration//GEN-END:variables
+    
+    JCheckBox[] checkers; 
 }
