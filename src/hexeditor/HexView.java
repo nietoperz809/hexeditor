@@ -183,7 +183,7 @@ public class HexView extends JTextArea
                     nval = '.';
                 }
                 super.remove(charidx, 1);
-                super.insertString(charidx, Character.toString((char) nval), a);
+                super.insertString(charidx, Character.toString((char) (nval&0xff)), a);
 
                 super.remove(offs, 1);
             }
