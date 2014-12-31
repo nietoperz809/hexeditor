@@ -104,7 +104,8 @@ public class Compiler
                 break;
 
             default:
-                ASM6502 p = ASM6502.parse(sort.cmd, sort.args);
+                ASM6502 p = new ASM6502 (labels, program_counter, pass);
+                p.parse(sort.cmd, sort.args);
                 if (pass == 2)
                     hex.setByteInMemory(program_counter, p.parsed_instruction);
                 program_counter++;

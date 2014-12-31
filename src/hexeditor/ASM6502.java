@@ -5,6 +5,8 @@
  */
 package hexeditor;
 
+import java.util.TreeMap;
+
 /**
  *
  * @author Administrator
@@ -15,6 +17,16 @@ public class ASM6502
     int parsed_operand = -1;
     int parsed_instruction = -1;
     int parsed_length = -1;
+    TreeMap<String, Integer> labels;
+    int program_counter;
+    int pass;
+    
+    public ASM6502 (TreeMap<String, Integer> l, int pc, int p)
+    {
+        labels = l;
+        program_counter = pc;
+        pass = p;
+    }
     
     @Override
     public String toString()
@@ -85,35 +97,77 @@ public class ASM6502
         }
     }
     
-    private static ASM6502 parseOP (String op) throws Exception
+    private static boolean isBranch (String instr)
     {
-        ASM6502 pa = new ASM6502();
-        
+        return instr.equals ("BCC") ||
+                instr.equals ("BCS") ||
+                instr.equals ("BEQ") ||
+                instr.equals ("BMI") ||
+                instr.equals ("BNE") ||
+                instr.equals ("BPL") ||
+                instr.equals ("BVC") ||
+                instr.equals ("BVS");
+    }
+   
+    private static boolean isJump (String instr)
+    {
+        return instr.equals ("JMP") ||
+               instr.equals ("JSR");
+    }
+    
+    private void parseOP (String instr, String op) throws Exception
+    {
         if (op == null || op.isEmpty())
         {
-            pa.parsed_mode = MODE.IMPL;
-            return pa;
+            parsed_mode = MODE.IMPL;
+            return;
         }
         
         op = op.toUpperCase();
+        
+        if (isBranch(instr))
+        {
+            parsed_mode = MODE.REL;
+            if (pass == 1)
+                return;
+            Integer addr = labels.get(op);
+            if (addr != null)
+            {
+                int diff = addr - program_counter - 2;
+                parsed_operand = diff;
+                return;
+            }
+        }
+        else if (isJump (instr))
+        {
+            parsed_mode = MODE.ABS;
+            if (pass == 1)
+                return;
+            Integer addr = labels.get(op);
+            if (addr != null)
+            {
+                parsed_operand = addr;
+                return;
+            }
+        }
         
         int k1;
         int k2;
         switch (op.charAt(0))
         {
             case '*':
-            pa.parsed_mode = MODE.REL;
-            pa.parsed_operand = readNumber (op.substring(1));
+            parsed_mode = MODE.REL;
+            parsed_operand = readNumber (op.substring(1));
             break;
               
             case 'A':
-            pa.parsed_mode = MODE.ACC;
+            parsed_mode = MODE.ACC;
             break;
                 
             case '#':
-            pa.parsed_mode = MODE.IMM;
-            pa.parsed_operand = readNumber (op.substring(1));
-            if (pa.parsed_operand > 0xff)
+            parsed_mode = MODE.IMM;
+            parsed_operand = readNumber (op.substring(1));
+            if (parsed_operand > 0xff)
                 throw new Exception ("Number too big");
             break;
         
@@ -122,18 +176,18 @@ public class ASM6502
             k2 = op.indexOf("),Y");
             if (k1 > 0)
             {
-                pa.parsed_operand = readNumber (op.substring(1, k1));
-                pa.parsed_mode = MODE.INDX;
+                parsed_operand = readNumber (op.substring(1, k1));
+                parsed_mode = MODE.INDX;
             }
             else if (k2 > 0)
             {
-                pa.parsed_operand = readNumber (op.substring(1, k2));
-                pa.parsed_mode = MODE.INDY;
+                parsed_operand = readNumber (op.substring(1, k2));
+                parsed_mode = MODE.INDY;
             }
             else
             {
-                pa.parsed_operand = readNumber (op.substring(1, op.length()-1));
-                pa.parsed_mode = MODE.IND;
+                parsed_operand = readNumber (op.substring(1, op.length()-1));
+                parsed_mode = MODE.IND;
             }
             break;
 
@@ -142,23 +196,21 @@ public class ASM6502
             k2 = op.indexOf(",Y");
             if (k1 > 0)
             {
-                pa.parsed_operand = readNumber (op.substring(0, k1));
-                pa.parsed_mode = pa.parsed_operand > 0xff ? MODE.ABSX : MODE.ZPX;
+                parsed_operand = readNumber (op.substring(0, k1));
+                parsed_mode = parsed_operand > 0xff ? MODE.ABSX : MODE.ZPX;
             }
             else if (k2 > 0)
             {
-                pa.parsed_operand = readNumber (op.substring(0, k2));
-                pa.parsed_mode = pa.parsed_operand > 0xff ? MODE.ABSY : MODE.ZPY;
+                parsed_operand = readNumber (op.substring(0, k2));
+                parsed_mode = parsed_operand > 0xff ? MODE.ABSY : MODE.ZPY;
             }
             else
             {
-                pa.parsed_operand = readNumber (op);
-                pa.parsed_mode = op.length() >=4 ? MODE.ABS : MODE.ZP;
+                parsed_operand = readNumber (op);
+                parsed_mode = op.length() >=4 ? MODE.ABS : MODE.ZP;
             }
             break;
         }
-        
-        return pa;
     }
 
     private static int findOpcode (String instr, MODE addr) throws Exception
@@ -178,14 +230,12 @@ public class ASM6502
      * Parses one instruction an returns an ASM6502 Object containing the result
      * @param instr The instruction
      * @param adr The operand
-     * @return Parsed instruction
      * @throws Exception If smth. gone wrong
      */
-    public static ASM6502 parse (String instr, String adr) throws Exception
+    public void parse (String instr, String adr) throws Exception
     {
-        ASM6502 pa = parseOP(adr);
-        pa.parsed_instruction = findOpcode (instr, pa.parsed_mode);
-        pa.parsed_length = Opcode.opcodes[pa.parsed_instruction].length; 
-        return pa;
+        parseOP (instr, adr);
+        parsed_instruction = findOpcode (instr, parsed_mode);
+        parsed_length = Opcode.opcodes[parsed_instruction].length; 
     }
 }
