@@ -27,23 +27,73 @@ public class Compiler
         hex = h;
     }
 
-    private void compile (String label, String cmd, String args, int pass) throws Exception
+    class Partitioner 
+    {
+        public String label;
+        public String cmd;
+        public String args;
+        
+        Partitioner (String in)
+        {
+            in = in.trim().toUpperCase();
+            int sep = in.indexOf(' ');
+            if (sep == -1) // only one part
+            {
+                if (in.charAt(in.length()-1) == ':')  // label?                
+                    label = in;
+                else
+                    cmd = in;
+                return;
+            }
+            String temp = in.substring(0, sep); // fist part
+            in = in.substring(sep+1).trim();  // rest
+            if (temp.charAt(temp.length()-1) == ':')  // label?
+            {
+                label = temp;
+                sep = in.indexOf(' ');
+                if (sep == -1) // no args?
+                {
+                    cmd = in;
+                    return;
+                }
+                cmd = in.substring(0, sep);
+                args = in.substring(sep+1).replaceAll("\\s", "");
+            }
+            else // no label
+            {
+                cmd = temp;
+                args = in.replaceAll("\\s", "");
+            }
+        }
+    }
+    
+    /**
+     * Compiles single line
+     * @param label Label
+     * @param cmd Opcode
+     * @param args Argument
+     * @param pass 1 or 2
+     * @throws Exception If smth. goes wrong
+     */
+    private void compile (Partitioner sort, int pass) throws Exception
     {
         int val;
-        if (pass == 1 && label != null)
+        if (pass == 1 && sort.label != null)
         {
-            if (null != labels.put(label, program_counter))
-                throw new Exception ("Label "+label+" already exists");
+            if (null != labels.put(sort.label, program_counter))
+                throw new Exception ("Label "+sort.label+" already exists");
         }
-        switch (cmd)
+        if (sort.cmd == null) // only label
+            return;
+        switch (sort.cmd)
         {
             case ".ORG":
-                val = HexTools.readHex6502(args);
+                val = HexTools.readHex6502(sort.args);
                 program_counter = val;
                 break;
 
             case ".BYT":
-                String[] bytes = args.split(",");
+                String[] bytes = sort.args.split(",");
                 for (String byte1 : bytes)
                 {
                     val = HexTools.readHex6502Byte(byte1);
@@ -54,7 +104,7 @@ public class Compiler
                 break;
 
             default:
-                ASM6502 p = ASM6502.parse(cmd, args);
+                ASM6502 p = ASM6502.parse(sort.cmd, sort.args);
                 if (pass == 2)
                     hex.setByteInMemory(program_counter, p.parsed_instruction);
                 program_counter++;
@@ -83,29 +133,23 @@ public class Compiler
      */
     public void compile(String text) throws Exception
     {
-        program_counter = 0;
+        labels.clear();
         String[] lines = text.split("\n");
-        out:
+
+        System.out.println("Pass 1");
+        program_counter = 0;
         for (String txt1 : lines)
         {
-            int sep = txt1.indexOf(' '); // First blank
-            String cmd;
-            String args = null;
-            if (sep == -1)
-            {
-                cmd = txt1.trim().toUpperCase();
-            }
-            else
-            {
-                cmd = txt1.substring(0, sep).trim().toUpperCase();
-                args = txt1.substring(sep).replaceAll("\\s", "").toUpperCase();
-            }
+            Partitioner sort = new Partitioner (txt1);
+            compile (sort, 1);
+        }
 
-            if (cmd.isEmpty())
-            {
-                continue;
-            }
-            compile (null, cmd, args, 2);
+        System.out.println("Pass 2");
+        program_counter = 0;
+        for (String txt1 : lines)
+        {
+            Partitioner sort = new Partitioner (txt1);
+            compile (sort, 2);
         }
     }
 }

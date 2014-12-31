@@ -158,7 +158,7 @@ public class TestFrame extends javax.swing.JFrame
             }
         });
 
-        jButton3.setText("Complie");
+        jButton3.setText("Compile");
         jButton3.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
