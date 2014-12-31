@@ -5,6 +5,7 @@
  */
 package hexeditor;
 
+import hexeditor.Opcode.MODE;
 import java.util.TreeMap;
 
 /**
@@ -42,41 +43,6 @@ public class ASM6502
         sb.append (parsed_length);
         return sb.toString();
     }
-    
-    public static enum MODE 
-    {
-    	ACC,	// A            - accumulator
-	IMM,	// #vv          - immediate
-	ZP,	// $vv          - zero page
-	ZPX,	// $vv,y        - zero page, x
-	ZPY,	// $vv,y        - zero page, y
-	ABS,	// $vvvv        - absolute
-	ABSX,	// $vvvv,x      - absolute, x
-	ABSY,	// $vvvv,y      - absolute, y
-	IMPL,	// NONE         - implied
-	REL,	// *+4          - relative
-	INDX,	// ($vv,x)      - indirect, x
-	INDY,	// ($vv),y      - indirect, y
-	IND,	// ($vvvv)      - indirect
-        INVALID
-    }
-
-    public static final int addrModeLen[] = 
-    {
-	1, // accumulator
-	2, // immediate
-	2, // zero page
-	2, // zero page, x
-	2, // zero page, y
-	3, // absolute
-	3, // absolute, x
-	3, // absolute, y
-	1, // implied
-	2, // relative
-	2, // indirect, x
-	2, // indirect, y
-	3  // indirect
-    };
     
     private static int readNumber (String in) throws Exception
     {
