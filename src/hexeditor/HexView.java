@@ -244,7 +244,7 @@ public class HexView extends JTextArea
             b = '.';
         }
         plainDoc.remove(charidx, 1);
-        plainDoc.insertString2(charidx, Character.toString((char) b), null);
+        plainDoc.insertString2(charidx, Character.toString((char) (b&0xff)), null);
     }
 
     private int setHiNibble(int offset, int val)

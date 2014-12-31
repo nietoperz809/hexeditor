@@ -47,23 +47,26 @@ public class HexTools
     
     public static int readHex6502 (String in)
     {
-        if (in.charAt(0) != '$')
-            return -1;
-        return (readHex (in.substring(1)));
+        if (in.charAt(0) == '$')
+            return readHex (in.substring(1));
+        return Integer.parseInt(in);
     }
 
-    public static int readHex6502Byte (String in)
+    public static int readHex6502Byte (String in) throws Exception
     {
-        if (in.length() != 3)
-            return -1;
-        return readHex6502 (in);
+        int ret = readHex6502 (in);
+        System.out.println(ret);
+        if (ret < -128 || ret > 255)
+            throw new Exception("Number not byte range");
+        return ret;
     }
 
-    public static int readHex6502Word (String in)
+    public static int readHex6502Word (String in) throws Exception
     {
-        if (in.length() != 5)
-            return -1;
-        return readHex6502 (in);
+        int ret = readHex6502 (in);
+        if (ret < -32768 || ret > 65535)
+            throw new Exception("Number not word range");
+        return ret;
     }
     
     public static String toHex16(int in)

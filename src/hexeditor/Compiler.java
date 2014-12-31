@@ -62,11 +62,6 @@ public class Compiler
                     for (String byte1 : bytes)
                     {
                         val = HexTools.readHex6502Byte(byte1);
-                        if (val == -1)
-                        {
-                            System.out.println("err in bytes");
-                            break out;
-                        }
                         try
                         {
                             hex.setByteInMemory(origin, val);
