@@ -191,7 +191,11 @@ public class HexView extends JTextArea
             super.insertString(offs, str, a);
         }
     };
-
+    
+    /**
+     * Constructor
+     * @param mem Memory block to be displayed
+     */
     public HexView(int[] mem)
     {
         super();
@@ -264,7 +268,7 @@ public class HexView extends JTextArea
         return b;
     }
 
-    private void populate()
+    public void populate()
     {
         StringBuilder sb = new StringBuilder();
         for (int n = 0; n < memory.length; n += 8)

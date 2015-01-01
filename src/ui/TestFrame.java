@@ -305,8 +305,22 @@ public class TestFrame extends javax.swing.JFrame
         });
 
         jButton6.setText("LoadMem");
+        jButton6.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         jButton7.setText("SaveMem");
+        jButton7.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -653,6 +667,39 @@ public class TestFrame extends javax.swing.JFrame
            
         }
     }//GEN-LAST:event_jButton5ActionPerformed
+    
+    /**
+     * Save mem
+     * @param evt 
+     */
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton7ActionPerformed
+    {//GEN-HEADEREND:event_jButton7ActionPerformed
+        try
+        {
+            FileUtility.saveMem(this, memory);
+        }
+        catch (Exception ex)
+        {
+          
+        }
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    /**
+     * Load mem
+     * @param evt 
+     */
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton6ActionPerformed
+    {//GEN-HEADEREND:event_jButton6ActionPerformed
+        try
+        {
+            FileUtility.loadMem(this, memory);
+            ((HexView) hexView).populate();
+        }
+        catch (Exception ex)
+        {
+            System.out.println(ex);
+        }
+    }//GEN-LAST:event_jButton6ActionPerformed
 
     /**
      * @param args the command line arguments
