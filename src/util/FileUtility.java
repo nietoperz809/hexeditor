@@ -22,7 +22,7 @@ interface LoadFunc
 
 interface SaveFunc
 {
-    void doIt(String content, String name);
+    void doIt(String name);
 }
 
 /**
@@ -53,7 +53,7 @@ public class FileUtility
         if (chooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION)
         {
             String name = chooser.getSelectedFile().getAbsolutePath();
-            code.doIt(content, name);
+            code.doIt(name);
         }
     }
 
@@ -89,11 +89,11 @@ public class FileUtility
      */
     public static void saveSource(Component parent, String content) throws Exception
     {
-        save ("6502 ASM code", "asm", parent, content, (String content1, String name) ->
+        save ("6502 ASM code", "asm", parent, content, (String name) ->
         {
             try (PrintStream out = new PrintStream(new FileOutputStream(name)))
             {
-                out.print(content1);
+                out.print(content);
             }
             catch (FileNotFoundException ex)
             {
