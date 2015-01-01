@@ -645,7 +645,8 @@ public class TestFrame extends javax.swing.JFrame
         try
         {
             String s = FileUtility.loadSource(this);
-            asmTxt.setText(s);
+            if (s != null)
+                asmTxt.setText(s);
         }
         catch (Exception ex)
         {

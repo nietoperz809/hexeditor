@@ -17,12 +17,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 interface LoadFunc
 {
-    String doIt(File file);
+    Object doIt(File file, FileReader reader);
 }
 
 interface SaveFunc
 {
-    void doIt(String name);
+    void doIt(FileOutputStream fo);
 }
 
 /**
@@ -40,7 +40,8 @@ public class FileUtility
         {
             String name = chooser.getSelectedFile().getAbsolutePath();
             File file = new File(name); //for ex foo.txt
-            return code.doIt(file);
+            FileReader reader = new FileReader(file);
+            return (String)code.doIt (file, reader);
         }
         return null;
     }
@@ -53,7 +54,7 @@ public class FileUtility
         if (chooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION)
         {
             String name = chooser.getSelectedFile().getAbsolutePath();
-            code.doIt(name);
+            code.doIt(new FileOutputStream(name));
         }
     }
 
@@ -65,19 +66,18 @@ public class FileUtility
      */
     public static String loadSource(Component parent) throws Exception
     {
-        return load("6502 ASM code", "asm", parent, (File file) ->
+        return load("6502 ASM code", "asm", parent, (File file, FileReader reader) ->
         {
-            String content = null;
-            try (FileReader reader = new FileReader(file))
+            char[] chars = new char[(int) file.length()];
+            try
             {
-                char[] chars = new char[(int) file.length()];
                 reader.read(chars);
-                content = new String(chars);
             }
             catch (IOException ex)
             {
+                
             }
-            return content;
+            return new String(chars);
         });
     }
 
@@ -89,15 +89,10 @@ public class FileUtility
      */
     public static void saveSource(Component parent, String content) throws Exception
     {
-        save ("6502 ASM code", "asm", parent, (String name) ->
+        save ("6502 ASM code", "asm", parent, (FileOutputStream fo) ->
         {
-            try (PrintStream out = new PrintStream(new FileOutputStream(name)))
-            {
-                out.print(content);
-            }
-            catch (FileNotFoundException ex)
-            {
-            }
+            PrintStream out = new PrintStream(fo);
+            out.print(content);
         });
     }
 }
