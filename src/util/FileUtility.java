@@ -45,7 +45,7 @@ public class FileUtility
         return null;
     }
 
-    private static void save(String s1, String s2, Component parent, String content, SaveFunc code) throws Exception
+    private static void save(String s1, String s2, Component parent, SaveFunc code) throws Exception
     {
         JFileChooser chooser = new JFileChooser();
         chooser.setApproveButtonText("Save now!");
@@ -89,7 +89,7 @@ public class FileUtility
      */
     public static void saveSource(Component parent, String content) throws Exception
     {
-        save ("6502 ASM code", "asm", parent, content, (String name) ->
+        save ("6502 ASM code", "asm", parent, (String name) ->
         {
             try (PrintStream out = new PrintStream(new FileOutputStream(name)))
             {
