@@ -15,6 +15,9 @@ public class Opcode
     public final MODE addr;
     int length;
 
+    /**
+     * Addressing modes
+     */
     public static enum MODE 
     {
     	ACC,	// A            - accumulator
@@ -33,6 +36,9 @@ public class Opcode
         INVALID
     }
 
+    /**
+     * Length of Addressing mode
+     */
     public static final int addrModeLen[] = 
     {
 	1, // accumulator
@@ -50,8 +56,9 @@ public class Opcode
 	3  // indirect
     };
     
-    
-    
+    /**
+     * All 256 possible Opcodes
+     */
     static public Opcode[] opcodes = new Opcode[]
     {
 	new Opcode("BRK",MODE.IMPL), new Opcode("ORA",MODE.INDX), new Opcode(null,MODE.IMPL), new Opcode(null,MODE.IMPL),

@@ -29,48 +29,6 @@ public class Compiler
         hex = h;
     }
 
-    class Partitioner 
-    {
-        public String label;
-        public String cmd;
-        public String args;
-        
-        Partitioner (String in)
-        {
-            if (in.isEmpty())
-                return;
-            
-            in = in.trim().toUpperCase();
-            int sep = in.indexOf(' ');
-            if (sep == -1) // only one part
-            {
-                if (in.charAt(in.length()-1) == ':')  // label?                
-                    label = in;
-                else
-                    cmd = in;
-                return;
-            }
-            String temp = in.substring(0, sep); // fist part
-            in = in.substring(sep+1).trim();  // rest
-            if (temp.charAt(temp.length()-1) == ':')  // label?
-            {
-                label = temp;
-                sep = in.indexOf(' ');
-                if (sep == -1) // no args?
-                {
-                    cmd = in;
-                    return;
-                }
-                cmd = in.substring(0, sep);
-                args = in.substring(sep+1).replaceAll("\\s", "");
-            }
-            else // no label
-            {
-                cmd = temp;
-                args = in.replaceAll("\\s", "");
-            }
-        }
-    }
     
     /**
      * Compiles single line

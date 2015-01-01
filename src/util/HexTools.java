@@ -33,7 +33,7 @@ public class HexTools
         return sb.toString();
     }
 
-    public static int readHex(String in)
+    public static int readHex(String in) throws Exception
     {
         try
         {
@@ -41,11 +41,11 @@ public class HexTools
         }
         catch (Exception ex)
         {
-            return -1;
+            throw new Exception ("Integer parse error");
         }
     }
     
-    public static int readHex6502 (String in)
+    public static int readHex6502 (String in) throws Exception
     {
         if (in.charAt(0) == '$')
             return readHex (in.substring(1));

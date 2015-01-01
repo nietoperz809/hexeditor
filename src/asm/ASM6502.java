@@ -179,6 +179,13 @@ public class ASM6502
         }
     }
 
+    /**
+     * Find Opcode byte
+     * @param instr Instruction
+     * @param addr Adressing mode
+     * @return The opcode byte
+     * @throws Exception if Opcode does not exist
+     */
     private static int findOpcode (String instr, MODE addr) throws Exception
     {
         instr = instr.toUpperCase();
