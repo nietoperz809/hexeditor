@@ -68,8 +68,6 @@ public class TestFrame extends javax.swing.JFrame
     private void initComponents()
     {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        hexView = new HexView(memory);
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -99,21 +97,13 @@ public class TestFrame extends javax.swing.JFrame
         runButton = new javax.swing.JToggleButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        jSplitPane1 = new javax.swing.JSplitPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        hexView = new HexView(memory);
         jScrollPane2 = new javax.swing.JScrollPane();
         asmTxt = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(267, 101));
-
-        hexView.setBackground(new java.awt.Color(0, 102, 102));
-        hexView.setColumns(20);
-        hexView.setFont(new java.awt.Font("Lucida Console", 1, 18)); // NOI18N
-        hexView.setForeground(new java.awt.Color(255, 255, 102));
-        hexView.setRows(5);
-        jScrollPane1.setViewportView(hexView);
-
-        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         jPanel1.setBackground(new java.awt.Color(255, 204, 0));
 
@@ -392,11 +382,26 @@ public class TestFrame extends javax.swing.JFrame
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_END);
 
+        jSplitPane1.setDividerLocation(500);
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(267, 101));
+
+        hexView.setBackground(new java.awt.Color(0, 102, 102));
+        hexView.setColumns(20);
+        hexView.setFont(new java.awt.Font("Lucida Console", 1, 18)); // NOI18N
+        hexView.setForeground(new java.awt.Color(255, 255, 102));
+        hexView.setRows(5);
+        jScrollPane1.setViewportView(hexView);
+
+        jSplitPane1.setLeftComponent(jScrollPane1);
+
         asmTxt.setColumns(20);
         asmTxt.setRows(5);
         jScrollPane2.setViewportView(asmTxt);
 
-        getContentPane().add(jScrollPane2, java.awt.BorderLayout.EAST);
+        jSplitPane1.setRightComponent(jScrollPane2);
+
+        getContentPane().add(jSplitPane1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -645,6 +650,7 @@ public class TestFrame extends javax.swing.JFrame
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToggleButton runButton;
     private javax.swing.JTextField textA;
     private javax.swing.JTextField textP;
