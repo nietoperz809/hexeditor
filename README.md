@@ -13,13 +13,11 @@ Assembler features:
 - .byt and .org directives.
 - Labels for jmp/jsr and branches, e.g. -> lab: jmp lab:
 - Load/Save the asm source.
+- .byt also knows chars (.byt 'h','e','l','l','o') 
 
 Simulator features
 ------------------
 Run, reset and single step.
 Display and change registers and flags.
 Disassemble current instruction.
-
-Missing
--------
-Hex window save/load ops (load/save of memory)
+Hex window save/load (load/save of memory)

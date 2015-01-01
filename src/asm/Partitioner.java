@@ -21,7 +21,7 @@ public class Partitioner
         {
             return;
         }
-        in = in.trim().toUpperCase();
+        in = in.trim();
         int sep = in.indexOf(' ');
         if (sep == -1)
         {

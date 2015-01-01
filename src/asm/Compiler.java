@@ -46,8 +46,11 @@ public class Compiler
             if (null != labels.put(sort.label, program_counter))
                 throw new Exception ("Label "+sort.label+" already exists");
         }
+        
         if (sort.cmd == null) // only label
             return;
+        
+        sort.cmd = sort.cmd.toUpperCase();
         switch (sort.cmd)
         {
             case ".ORG":
@@ -59,7 +62,10 @@ public class Compiler
                 String[] bytes = sort.args.split(",");
                 for (String byte1 : bytes)
                 {
-                    val = HexTools.readHex6502Byte(byte1);
+                    if (byte1.charAt(0)=='\'' && byte1.charAt(2)=='\'')
+                        val = byte1.charAt(1);
+                    else
+                        val = HexTools.readHex6502Byte(byte1);
                     if (pass == 2)
                         hex.setByteInMemory(program_counter, val);
                     program_counter++;
@@ -67,6 +73,7 @@ public class Compiler
                 break;
 
             default:
+                sort.args = sort.args.toUpperCase();
                 ASM6502 p = new ASM6502 (labels, program_counter, pass);
                 p.parse(sort.cmd, sort.args);
                 if (pass == 2)
