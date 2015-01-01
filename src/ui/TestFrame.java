@@ -395,7 +395,10 @@ public class TestFrame extends javax.swing.JFrame
 
         jSplitPane1.setLeftComponent(jScrollPane1);
 
+        asmTxt.setBackground(new java.awt.Color(0, 0, 0));
         asmTxt.setColumns(20);
+        asmTxt.setFont(asmTxt.getFont().deriveFont((float)18));
+        asmTxt.setForeground(new java.awt.Color(153, 255, 102));
         asmTxt.setRows(5);
         jScrollPane2.setViewportView(asmTxt);
 

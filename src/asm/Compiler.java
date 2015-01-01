@@ -37,6 +37,9 @@ public class Compiler
         
         Partitioner (String in)
         {
+            if (in.isEmpty())
+                return;
+            
             in = in.trim().toUpperCase();
             int sep = in.indexOf(' ');
             if (sep == -1) // only one part
