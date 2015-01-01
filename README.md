@@ -8,17 +8,18 @@ Patrick Meades 6502 emulator for testing.
 
 Assembler features:
 -------------------
-- 2-pass
-- Knows Standard 6502 instruction set
-- .byt and .org directives
+- 2-pass.
+- Knows Standard 6502 instruction set.
+- .byt and .org directives.
 - Labels for jmp/jsr and branches, e.g. -> lab: jmp lab:
+- Load/Save the asm source.
 
 Simulator features
 ------------------
-Run and single step.
-Display registers and flags.
+Run, reset and single step.
+Display and change registers and flags.
 Disassemble current instruction.
 
 Missing
 -------
-File ops (load/save of asm-source)
+Hex window save/load ops (load/save of memory)

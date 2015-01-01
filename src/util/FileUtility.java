@@ -7,8 +7,6 @@ package util;
 
 import java.awt.Component;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintStream;
@@ -51,6 +49,8 @@ public class FileUtility
     /**
      *
      * @param parent
+     * @param content
+     * @throws java.lang.Exception
      */
     public static void saveSource(Component parent, String content) throws Exception
     {
