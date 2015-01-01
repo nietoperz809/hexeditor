@@ -1,6 +1,7 @@
 /*
- * Mnemonic.java
- * Copyright 2013 Patrick Meade.
+ * AddressMode.java
+ * Copyright 2013 
+
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -15,31 +16,44 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package main.java.com.pmeade.cpu.pm6502;
+package simulator;
 
 /**
  * @author pmeade
  */
-public enum Mnemonic
+public enum AddressMode
 {
-    ADC, AND, ASL, BCC, BCS, BEQ, BIT, BMI,
-    BNE, BPL, BRK, BVC, BVS, CLC, CLD, CLI,
-    CLV, CMP, CPX, CPY, DEC, DEX, DEY, EOR,
-    INC, INX, INY, JMP, JSR, LDA, LDX, LDY,
-    LSR, NOP, ORA, PHA, PHP, PLA, PLP, ROL,
-    ROR, RTI, RTS, SBC, SEC, SED, SEI, STA,
-    STX, STY, TAX, TAY, TSX, TXA, TXS, TYA,
-    HLT; // HLT = Halt (Bad Instruction)
+    BAD("???"),
+    ABS("Absolute"),
+    ABX("Absolute,X"),
+    ABY("Absolute,Y"),
+    ACC("Accumulator"),
+    IDX("(Indirect,X)"),
+    IDY("(Indirect),Y"),
+    IMM("Immediate"),
+    IMP("Implied"),
+    IND("Indirect"),
+    REL("Relative"),
+    ZPG("Zero Page"),
+    ZPX("Zero Page,X"),
+    ZPY("Zero Page,Y");
 
-    public static Mnemonic fromString(String s)
+    public static AddressMode fromString(String addressMode)
     {
-        for (Mnemonic mnemonic : Mnemonic.values())
+        for (AddressMode addrMode : AddressMode.values())
         {
-            if (mnemonic.toString().equalsIgnoreCase(s))
+            if (addrMode.addressMode.equalsIgnoreCase(addressMode))
             {
-                return mnemonic;
+                return addrMode;
             }
         }
         return null;
     }
+
+    private AddressMode(String addressMode)
+    {
+        this.addressMode = addressMode;
+    }
+
+    private String addressMode;
 }

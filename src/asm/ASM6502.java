@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hexeditor;
+package asm;
 
-import hexeditor.Opcode.MODE;
+import asm.Opcode.MODE;
 import java.util.TreeMap;
 
 /**

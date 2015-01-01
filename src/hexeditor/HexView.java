@@ -6,6 +6,7 @@
  */
 package hexeditor;
 
+import util.HexTools;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
