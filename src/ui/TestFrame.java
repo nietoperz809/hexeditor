@@ -10,6 +10,7 @@ import util.Clock;
 import asm.Compiler;
 import asm.DisASM6502;
 import hexeditor.HexView;
+import java.awt.Color;
 import javax.swing.JCheckBox;
 import simulator.Cpu6502;
 import simulator.MemoryIO;
@@ -96,6 +97,8 @@ public class TestFrame extends javax.swing.JFrame
         flagZ = new javax.swing.JCheckBox();
         flagC = new javax.swing.JCheckBox();
         runButton = new javax.swing.JToggleButton();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         asmTxt = new javax.swing.JTextArea();
 
@@ -290,6 +293,10 @@ public class TestFrame extends javax.swing.JFrame
             }
         });
 
+        jButton4.setText("Save");
+
+        jButton5.setText("Load");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -328,7 +335,7 @@ public class TestFrame extends javax.swing.JFrame
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton1)
@@ -336,10 +343,13 @@ public class TestFrame extends javax.swing.JFrame
                         .addComponent(jButton3)
                         .addGap(39, 39, 39))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton2)
-                        .addGap(18, 18, 18)
-                        .addComponent(runButton)
-                        .addContainerGap())))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jButton4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(runButton)
+                            .addComponent(jButton5)))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -372,7 +382,11 @@ public class TestFrame extends javax.swing.JFrame
                         .addGap(5, 5, 5)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton2)
-                            .addComponent(runButton))))
+                            .addComponent(runButton))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton4)
+                            .addComponent(jButton5))))
                 .addGap(0, 7, Short.MAX_VALUE))
         );
 
@@ -475,8 +489,6 @@ public class TestFrame extends javax.swing.JFrame
         reset();
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private int origin = 0;
-
     /**
      * Compile Button clicked
      *
@@ -543,27 +555,25 @@ public class TestFrame extends javax.swing.JFrame
         actOnCheckBox(0);
     }//GEN-LAST:event_flagCActionPerformed
 
-    Runnable runner = new Runnable()
+    private final Runnable runner = () ->
     {
-       @Override
-        public void run()
-        {
-            step();
-        }
+        step();
     };
     
-    Clock clock = new Clock (runner, 100);
+    private final Clock clock = new Clock (runner, 100);
     
     private void runButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_runButtonActionPerformed
     {//GEN-HEADEREND:event_runButtonActionPerformed
        if (runButton.isSelected())
        {
+           runButton.setBackground(Color.red);
            runButton.setText ("Stop");
            reset();
            clock.endPause();
        }
        else
        {
+           runButton.setBackground(Color.white);
            runButton.setText("Run");
            clock.doPause();
        }
@@ -623,6 +633,8 @@ public class TestFrame extends javax.swing.JFrame
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
