@@ -623,7 +623,6 @@ public class TestFrame extends javax.swing.JFrame
        {
            runButton.setBackground(Color.red);
            runButton.setText ("Stop");
-           reset();
            clock.endPause();
        }
        else

@@ -199,6 +199,7 @@ public class HexView extends JTextArea
     public HexView(int[] mem)
     {
         super();
+        this.setDoubleBuffered(true);
 
         Highlighter.HighlightPainter Painter1 = new DefaultHighlighter.DefaultHighlightPainter(Color.black);
         Highlighter.HighlightPainter Painter2 = new DefaultHighlighter.DefaultHighlightPainter(Color.GRAY);
