@@ -5,6 +5,7 @@
  */
 package asm;
 
+import asm.Compiler.PASS;
 import asm.Opcode.MODE;
 import java.util.TreeMap;
 import util.HexTools;
@@ -21,9 +22,9 @@ public class ASM6502
     int parsed_length = -1;
     TreeMap<String, Integer> labels;
     int program_counter;
-    int pass;
+    PASS pass;
     
-    public ASM6502 (TreeMap<String, Integer> l, int pc, int p)
+    public ASM6502 (TreeMap<String, Integer> l, int pc, PASS p)
     {
         labels = l;
         program_counter = pc;
@@ -74,7 +75,7 @@ public class ASM6502
         if (isBranch(instr))
         {
             parsed_mode = MODE.REL;
-            if (pass == 1)
+            if (pass == PASS.FIRST)
                 return;
             Integer addr = labels.get(op);
             if (addr != null)
@@ -87,7 +88,7 @@ public class ASM6502
         else if (isJump (instr))
         {
             parsed_mode = MODE.ABS;
-            if (pass == 1)
+            if (pass == PASS.FIRST)
                 return;
             Integer addr = labels.get(op);
             if (addr != null)

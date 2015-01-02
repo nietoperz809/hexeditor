@@ -19,6 +19,8 @@ public class Compiler
     private final HexView hex;
     TreeMap<String, Integer> labels = new TreeMap<>();
 
+    public enum PASS {FIRST, SECOND};
+    
     /**
      * Constructor
      *
@@ -29,9 +31,9 @@ public class Compiler
         hex = h;
     }
 
-    private void setMemByte(int b, int pass) throws Exception
+    private void setMemByte(int b, PASS pass) throws Exception
     {
-        if (pass == 2)
+        if (pass == PASS.SECOND)
         {
             hex.setByteInMemory(program_counter, b);
         }
@@ -47,10 +49,10 @@ public class Compiler
      * @param pass 1 or 2
      * @throws Exception If smth. goes wrong
      */
-    private void compile (Partitioner sort, int pass) throws Exception
+    private void compile (Partitioner sort, PASS pass) throws Exception
     {
         int val;
-        if (pass == 1 && sort.label != null)
+        if (pass == PASS.FIRST && sort.label != null)
         {
             if (null != labels.put(sort.label, program_counter))
             {
@@ -125,7 +127,7 @@ public class Compiler
         for (String txt1 : lines)
         {
             Partitioner sort = new Partitioner(txt1);
-            compile(sort, 1);
+            compile(sort, PASS.FIRST);
         }
 
         System.out.println("Pass 2");
@@ -133,7 +135,7 @@ public class Compiler
         for (String txt1 : lines)
         {
             Partitioner sort = new Partitioner(txt1);
-            compile(sort, 2);
+            compile(sort, PASS.SECOND);
         }
     }
 }
