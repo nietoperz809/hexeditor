@@ -32,7 +32,15 @@ public class HexTools
         sb.append (digits[in & 15]);
         return sb.toString();
     }
-
+   
+    public static String toHex16(int in)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(toHex8(in >> 8));
+        sb.append(toHex8(in));
+        return sb.toString();
+    }
+    
     public static int readHex(String in) throws Exception
     {
         try
@@ -41,20 +49,22 @@ public class HexTools
         }
         catch (Exception ex)
         {
-            throw new Exception ("Integer parse error");
+            throw new Exception ("Not a hex value");
         }
     }
     
-    public static int readHex6502 (String in) throws Exception
+    public static int readNumber (String in) throws Exception
     {
         if (in.charAt(0) == '$')
             return readHex (in.substring(1));
+        else if (in.charAt(0) == '\'' && in.charAt(2) == '\'')
+            return (in.charAt(1));
         return Integer.parseInt(in);
     }
 
     public static int readHex6502Byte (String in) throws Exception
     {
-        int ret = readHex6502 (in);
+        int ret = readNumber (in);
         System.out.println(ret);
         if (ret < -128 || ret > 255)
             throw new Exception("Number not byte range");
@@ -63,17 +73,9 @@ public class HexTools
 
     public static int readHex6502Word (String in) throws Exception
     {
-        int ret = readHex6502 (in);
+        int ret = readNumber (in);
         if (ret < -32768 || ret > 65535)
             throw new Exception("Number not word range");
         return ret;
-    }
-    
-    public static String toHex16(int in)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(toHex8(in >> 8));
-        sb.append(toHex8(in));
-        return sb.toString();
     }
 }

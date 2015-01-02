@@ -7,6 +7,7 @@ package asm;
 
 import asm.Opcode.MODE;
 import java.util.TreeMap;
+import util.HexTools;
 
 /**
  *
@@ -44,25 +45,6 @@ public class ASM6502
         return sb.toString();
     }
     
-    private static int readNumber (String in) throws Exception
-    {
-        try
-        {
-            if (in.charAt(0) == '$')
-            {
-                return Integer.parseInt(in.substring(1), 16) & 0xffff;
-            }
-            else
-            {
-                return Integer.parseInt(in) & 0xffff;
-            }
-        }
-        catch (NumberFormatException e)
-        {
-            throw new Exception ("Malformed number");
-        }
-    }
-    
     private static boolean isBranch (String instr)
     {
         return instr.equals ("BCC") ||
@@ -88,8 +70,6 @@ public class ASM6502
             parsed_mode = MODE.IMPL;
             return;
         }
-        
-        op = op.toUpperCase();
         
         if (isBranch(instr))
         {
@@ -123,16 +103,17 @@ public class ASM6502
         {
             case '*':
             parsed_mode = MODE.REL;
-            parsed_operand = readNumber (op.substring(1));
+            parsed_operand = HexTools.readNumber (op.substring(1));
             break;
               
+            case 'a':
             case 'A':
             parsed_mode = MODE.ACC;
             break;
                 
             case '#':
             parsed_mode = MODE.IMM;
-            parsed_operand = readNumber (op.substring(1));
+            parsed_operand = HexTools.readNumber (op.substring(1));
             if (parsed_operand > 0xff)
                 throw new Exception ("Number too big");
             break;
@@ -142,37 +123,37 @@ public class ASM6502
             k2 = op.indexOf("),Y");
             if (k1 > 0)
             {
-                parsed_operand = readNumber (op.substring(1, k1));
+                parsed_operand = HexTools.readNumber (op.substring(1, k1));
                 parsed_mode = MODE.INDX;
             }
             else if (k2 > 0)
             {
-                parsed_operand = readNumber (op.substring(1, k2));
+                parsed_operand = HexTools.readNumber (op.substring(1, k2));
                 parsed_mode = MODE.INDY;
             }
             else
             {
-                parsed_operand = readNumber (op.substring(1, op.length()-1));
+                parsed_operand = HexTools.readNumber (op.substring(1, op.length()-1));
                 parsed_mode = MODE.IND;
             }
             break;
 
             default:
-            k1 = op.indexOf(",X");
-            k2 = op.indexOf(",Y");
+            k1 = op.toUpperCase().indexOf(",X");
+            k2 = op.toUpperCase().indexOf(",Y");
             if (k1 > 0)
             {
-                parsed_operand = readNumber (op.substring(0, k1));
+                parsed_operand = HexTools.readNumber (op.substring(0, k1));
                 parsed_mode = parsed_operand > 0xff ? MODE.ABSX : MODE.ZPX;
             }
             else if (k2 > 0)
             {
-                parsed_operand = readNumber (op.substring(0, k2));
+                parsed_operand = HexTools.readNumber (op.substring(0, k2));
                 parsed_mode = parsed_operand > 0xff ? MODE.ABSY : MODE.ZPY;
             }
             else
             {
-                parsed_operand = readNumber (op);
+                parsed_operand = HexTools.readNumber (op);
                 parsed_mode = op.length() >=4 ? MODE.ABS : MODE.ZP;
             }
             break;
